@@ -1,0 +1,57 @@
+name: flutter_extension
+description: "Flutter extension"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons:
+  get:
+  shared_preferences:
+  flutter_screenutil:
+  flutter_svg:
+  flutter_spinkit:
+  cached_network_image:
+  shimmer: 
+  flutter_otp_text_field:
+  country_code_picker: ^3.4.0
+  image_picker: ^1.2.0
+  image_cropper:
+  dotted_border:
+  camera: ^0.11.3
+  google_mlkit_face_detection: ^0.13.1
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/language/
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Cinzel
+      fonts:
+        - asset: assets/fonts/Cinzel-Black.ttf
+        - asset: assets/fonts/Cinzel-Bold.ttf
+        - asset: assets/fonts/Cinzel-ExtraBold.ttf
+        - asset: assets/fonts/Cinzel-Medium.ttf
+        - asset: assets/fonts/Cinzel-Regular.ttf
+        - asset: assets/fonts/Cinzel-SemiBold.ttf
+
+
+    
+

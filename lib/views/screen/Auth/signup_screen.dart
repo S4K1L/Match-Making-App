@@ -75,9 +75,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   filled: true,
                 ),
 
-                const SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Checkbox(
@@ -95,43 +94,62 @@ class _SignupScreenState extends State<SignupScreen> {
                       },
                     ),
 
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: "Make changes in device settings at any\n time."
-                            .toUpperCase(),
-                        style: const TextStyle(
-                          fontFamily: 'Cinzel',
-                          fontSize: 12,
-                          color: Color(0xFF3C3C3C),
-                          fontWeight: FontWeight.w400,
+                    Expanded(
+           
+                      child: RichText(
+                        textAlign: TextAlign.left,
+                        text: TextSpan(
+                          text: "I AGREE TO THE ",
+                          style: const TextStyle(
+                            fontFamily: 'Cinzel',
+                            fontSize: 12,
+                            color: Color(0xFF3C3C3C),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "TERMS AND CONDITIONS",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Cinzel',
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0C312B),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color(0xFF0C312B),
+                                decorationThickness: 1.5,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // open terms
+                                },
+                            ),
+                            const TextSpan(
+                              text: " AND ",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Cinzel',
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF3C3C3C),
+                              ),
+                            ),
+                            TextSpan(
+                              text: "PRIVACY POLICY",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Cinzel',
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0C312B),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color(0xFF0C312B),
+                                decorationThickness: 1.5,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // open privacy policy
+                                },
+                            ),
+                          ],
                         ),
-                        children: [
-                          TextSpan(
-                            text: "Learn more in our".toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Cinzel',
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF3C3C3C),
-                            ),
-
-                            recognizer: TapGestureRecognizer()..onTap = () {},
-                          ),
-
-                          const TextSpan(
-                            text: " Privacy Policy",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Cinzel',
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF0C312B),
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF0C312B),
-                              decorationThickness: 1.5,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ],

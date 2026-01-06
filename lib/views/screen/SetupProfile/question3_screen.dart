@@ -56,7 +56,7 @@ class _Question3ScreenState extends State<Question3Screen> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "distance to find nearby matches and create red connections.",
+                        "distance to find nearby matches and create real connections.",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,

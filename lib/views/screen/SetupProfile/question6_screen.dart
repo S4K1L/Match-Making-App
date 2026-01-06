@@ -288,7 +288,7 @@ class _Question6ScreenState extends State<Question6Screen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            "Choose all that apply",
+                            "Choose all ",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,

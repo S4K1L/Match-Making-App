@@ -111,24 +111,29 @@ class _Question11ScreenState extends State<Question11Screen> {
                       Row(
                         children: [
                           Expanded(
-                            child: Container(
-                              height: 52,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFFFFF),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(
-                                  color: const Color(0xFF234F38),
-                                  width: 1,
+                            child: InkWell(
+                              onTap: () {
+                                
+                              },
+                              child: Container(
+                                height: 52,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFFFFF),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: const Color(0xFF234F38),
+                                    width: 1,
+                                  ),
                                 ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Skip",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF234F38),
+                                child: const Center(
+                                  child: Text(
+                                    "Skip",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF234F38),
+                                    ),
                                   ),
                                 ),
                               ),

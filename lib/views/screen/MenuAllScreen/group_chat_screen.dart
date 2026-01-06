@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/screen/MenuAllScreen/add_member_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class GroupChatScreen extends StatefulWidget {
+  const GroupChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<GroupChatScreen> createState() => _GroupChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _GroupChatScreenState extends State<GroupChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,23 +204,39 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: AppColors.textColor,
                         ),
                       ),
+
                       Row(
                         children: [
-                          Container(
-                            height: 10,
-                            width: 10,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF00CD07),
+                          SizedBox(
+                            height: 24,
+                            width: 70,
+                            child: Stack(
+                              children: List.generate(4, (index) {
+                                return Positioned(
+                                  left: index * 16.0,
+                                  child: CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.white,
+                                    child: CircleAvatar(
+                                      radius: 11,
+                                      backgroundImage: AssetImage(
+                                        'assets/images/amiliva.png',
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
                             ),
                           ),
-                          const SizedBox(width: 4),
-                          const Text(
-                            "Active",
+
+                          const SizedBox(width: 8),
+
+                          Text(
+                            "1.5K PEOPLE",
                             style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF707270),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF001C13),
                             ),
                           ),
                         ],
@@ -238,10 +255,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemBuilder: (BuildContext context) {
                       return [
                         PopupMenuItem(
-                          onTap: () {},
-                          value: 'Report profile',
+                          onTap: () {
+                            Get.to(() => AddMemberScreen());
+                          },
+                          value: 'Add people',
                           child: const Text(
-                            'Report profile',
+                            'Add People',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -260,9 +279,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ],
     );
   }
-
-
-
 }
 
 class ChatBubble extends StatelessWidget {

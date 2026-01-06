@@ -29,73 +29,108 @@ class _Question1ScreenState extends State<Question1Screen> {
               children: [
                 customAppBar(),
                 const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Hi! Let’s begin\nwith a quick \nintro.".toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      const SizedBox(height: 48),
-                      const Text(
-                        "Your Full Name",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        hintText: "Enter Your Name".toUpperCase(),
-                        filColor: Colors.white,
-                        filled: true,
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 18,
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Hi! Let’s begin\nwith a quick \nintro."
+                              .toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A1A),
                           ),
-                          child: SvgPicture.asset('assets/icons/user.svg'),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        "Your Birthday",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      CustomTextField(
-                        hintText: "DD/MM/YY".toUpperCase(),
-                        filColor: Colors.white,
-                        filled: true,
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 18,
+                        const SizedBox(height: 48),
+                        const Text(
+                          "Full Name",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A1A),
                           ),
-                          child: SvgPicture.asset('assets/icons/calender.svg'),
                         ),
-                      ),
-                      const SizedBox(height: 176),
+                        const SizedBox(height: 8),
+                        CustomTextField(
+                          hintText: "Enter Your Name".toUpperCase(),
+                          filColor: Colors.white,
+                          filled: true,
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 18,
+                            ),
+                            child: SvgPicture.asset('assets/icons/user.svg'),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          "Date Of Birth",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        CustomTextField(
+                          hintText: "DD/MM/YY".toUpperCase(),
+                          filColor: Colors.white,
+                          filled: true,
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 18,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/icons/calender.svg',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          "Height",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        SizedBox(height: 8,),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomTextField(
+                                hintText: "Feet",
+                                filColor: Colors.white,
+                                filled: true,
+                              ),
+                            ),
+                            SizedBox(width: 8,),
+                            Expanded(
+                              child: CustomTextField(
+                                hintText: "Inches",
+                                filColor: Colors.white,
+                                filled: true,
+                              ),
+                            ),
+                          ],
+                        ),
 
-                      CustomButton(
-                        onTap: () {
-                          Get.to(() => const Question2Screen());
-                        },
-                        text: "Next",
-                      ),
-                    ],
+                        const SizedBox(height: 150),
+
+                        CustomButton(
+                          onTap: () {
+                            Get.to(() => const Question2Screen());
+                          },
+                          text: "Next",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

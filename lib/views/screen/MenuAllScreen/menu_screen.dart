@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/bottom_menu..dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/culture_life_society.dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/food_wine_screen.dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/neurodiverse_screen.dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/society_group_screen.dart';
-import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_extension/views/screen/MenuAllScreen/group_chat_screen.dart';
+import 'package:flutter_extension/views/screen/MenuAllScreen/new_community_screen.dart';
 import 'package:get/get.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -37,43 +33,102 @@ class _MenuScreenState extends State<MenuScreen> {
                   _customAppbar(),
                   const SizedBox(height: 40),
 
-                  Column(
-                    children: [
-                      Center(
-                        child: Image.asset(
-                          Images.appLogo,
-                          height: 64,
-                          width: 80,
-                        ),
-                      ),
+                  Expanded(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Get.to(() => GroupChatScreen());
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 48,
+                                    width: 48,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          'assets/images/amiliva.png',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "MY JOIN COMMUNITY",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 0.5,
+                                          color: AppColors.textColor,
+                                        ),
+                                      ),
 
-                      const SizedBox(height: 4),
+                                      const SizedBox(height: 6),
 
-                      Text(
-                        "SOCIETY\nGROUP",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textColor,
-                        ),
-                      ),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            height: 24,
+                                            width: 70,
+                                            child: Stack(
+                                              children: List.generate(4, (
+                                                index,
+                                              ) {
+                                                return Positioned(
+                                                  left: index * 16.0,
+                                                  child: CircleAvatar(
+                                                    radius: 12,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    child: CircleAvatar(
+                                                      radius: 11,
+                                                      backgroundImage: AssetImage(
+                                                        'assets/images/amiliva.png',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                            ),
+                                          ),
 
-                      const SizedBox(height: 16),
+                                          const SizedBox(width: 8),
 
-                      _menuItem("ACTIVE & ADVENTURE SOCIETY", () {
-                        Get.to(() => const SocietyGroupScreen());
-                      }),
-                      _menuItem("FOOD & WINE SOCIETY", () {
-                        Get.to(() => const FoodWineScreen());
-                      }),
-                      _menuItem("NEURODIVERSE SOCIETY", () {
-                        Get.to(() => const NeurodiverseScreen());
-                      }),
-                      _menuItem("CULTURE & LIFESTYLE SOCIETY", () {
-                        Get.to(() => const CultureLifeSociety());
-                      }),
-                    ],
+                                          Text(
+                                            "1.5K PEOPLE",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xFF001C13),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Divider(color: Color(0xFF707270)),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (_, __) => SizedBox(height: 16),
+                      itemCount: 10,
+                    ),
                   ),
                 ],
               ),
@@ -81,81 +136,55 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
+      floatingActionButton: InkWell(
+        onTap: () {
+          Get.to(() => NewCommunityScreen());
+        },
+        child: Container(
+          width: 200,
+          height: 46,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFFC97E6D).withAlpha(10),
+                blurRadius: 16,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add, color: Color(0xFF234F38)),
+              SizedBox(width: 5),
+              Text(
+                "Create Community",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF234F38),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       bottomNavigationBar: const BottomMenu(4),
     );
   }
 
   Widget _customAppbar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset(Images.appLogo, width: 52, height: 42),
-
-          Text(
-            "Menu",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textColor,
-            ),
-          ),
-
-          InkWell(
-            onTap: () {
-              Get.to(() => const NotificationScreen());
-            },
-            child: Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFF8FDFF),
-                border: Border.all(
-                  color: const Color(0xFF2EAED2).withValues(alpha: 0.20),
-                  width: 0.3,
-                ),
-              ),
-
-              child: Center(
-                child: SvgPicture.asset('assets/icons/notification.svg'),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _menuItem(String title, Function()? onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF6C53E)),
-          color: const Color(0xFFEBE1BF),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgPicture.asset("assets/icons/group.svg"),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF2A2D2A),
-                ),
-              ),
-            ),
-          ],
+    return Center(
+      child: Text(
+        "Community ",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textColor,
         ),
       ),
     );

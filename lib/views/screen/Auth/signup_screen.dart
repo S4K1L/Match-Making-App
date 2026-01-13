@@ -59,7 +59,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Enter your password".toUpperCase(),
+                  " password".toUpperCase(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'Cinzel',

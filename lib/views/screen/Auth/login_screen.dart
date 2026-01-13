@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Enter your password".toUpperCase(),
+                  "password".toUpperCase(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,

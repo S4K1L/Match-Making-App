@@ -79,7 +79,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ),
                   ),
 
-                  // Bottom Input Field
+      
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(

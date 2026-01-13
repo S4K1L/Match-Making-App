@@ -6,7 +6,6 @@ import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -102,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
 
                         const SizedBox(height: 16),
-                        _headingText(text: "Feet & inches"),
+                        _headingText(text: "Height"),
                         const SizedBox(height: 8),
                         const Row(
                           children: [

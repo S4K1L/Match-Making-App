@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_radio_button.dart';
-import 'package:flutter_extension/views/base/custom_switch.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class AddMemberScreen extends StatefulWidget {
   const AddMemberScreen({super.key});

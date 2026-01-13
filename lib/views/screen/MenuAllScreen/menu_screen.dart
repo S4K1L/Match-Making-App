@@ -126,7 +126,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           ),
                         );
                       },
-                      separatorBuilder: (_, __) => SizedBox(height: 16),
+                      separatorBuilder: (_, _) => SizedBox(height: 16),
                       itemCount: 10,
                     ),
                   ),
@@ -162,7 +162,7 @@ class _MenuScreenState extends State<MenuScreen> {
               Icon(Icons.add, color: Color(0xFF234F38)),
               SizedBox(width: 5),
               Text(
-                "Create Community",
+                "Create Society",
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -180,7 +180,7 @@ class _MenuScreenState extends State<MenuScreen> {
   Widget _customAppbar() {
     return Center(
       child: Text(
-        "Community ",
+        "Society",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,

@@ -74,7 +74,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       const SizedBox(height: 48),
                       Text(
-                        "Enter your password".toUpperCase(),
+                        "password".toUpperCase(),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -92,7 +92,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                       const SizedBox(height: 18),
                       Text(
-                        "Enter Confirm Password".toUpperCase(),
+                        "Confirm Password".toUpperCase(),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,

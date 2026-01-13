@@ -114,7 +114,6 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
                                     ),
                                   ),
 
-                                  // Dotted border when image is not selected
                                   if (!hasImage)
                                     const Positioned.fill(
                                       child: DottedBorder(
@@ -128,7 +127,7 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
                                       ),
                                     ),
 
-                                  // Main label for the first image
+                                  
                                   if (index == 0 && hasImage)
                                     Positioned(
                                       top: 6,
@@ -155,7 +154,7 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
                                       ),
                                     ),
 
-                                  // Plus or Close button
+                              
                                   Positioned(
                                     bottom: 2,
                                     right: 2,

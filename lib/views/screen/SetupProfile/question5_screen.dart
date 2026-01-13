@@ -41,22 +41,14 @@ class _Question5ScreenState extends State<Question5Screen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Who do you want to be matched with?",
+                        "Who are you hoping to connect with?",
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF1A1A1A),
                         ),
                       ),
-                      // const SizedBox(height: 8),
-                      // const Text(
-                      //   "Pick the gender that best represents you.",
-                      //   style: TextStyle(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.w400,
-                      //     color: Color(0xFF2A2D2A),
-                      //   ),
-                      // ),
+
                       const SizedBox(height: 48),
 
                       Container(
@@ -79,7 +71,7 @@ class _Question5ScreenState extends State<Question5Screen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Female",
+                              "Women",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -91,13 +83,13 @@ class _Question5ScreenState extends State<Question5Screen> {
                             Obx(() {
                               bool isSelect =
                                   _setupProfileController.selectedMan.value ==
-                                  "Female";
+                                  "Women";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
                                     _setupProfileController.selectedMan.value =
-                                        "Female";
+                                        "Women";
                                   } else {
                                     _setupProfileController.selectedMan.value =
                                         "";
@@ -130,7 +122,7 @@ class _Question5ScreenState extends State<Question5Screen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Male",
+                              "Men",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -142,13 +134,13 @@ class _Question5ScreenState extends State<Question5Screen> {
                             Obx(() {
                               bool isSelect =
                                   _setupProfileController.selectedMan.value ==
-                                  "Male";
+                                  "Men";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
                                     _setupProfileController.selectedMan.value =
-                                        "Male";
+                                        "Men";
                                   } else {
                                     _setupProfileController.selectedMan.value =
                                         "";
@@ -160,56 +152,108 @@ class _Question5ScreenState extends State<Question5Screen> {
                         ),
                       ),
 
-                      // const SizedBox(height: 16),
-                      // Container(
-                      //   height: 52,
-                      //   width: double.infinity,
-                      //   padding: const EdgeInsets.symmetric(
-                      //     horizontal: 15,
-                      //     vertical: 15,
-                      //   ),
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(32),
-                      //     border: Border.all(
-                      //       color: const Color(0xFFE8E8E8),
-                      //       width: 1,
-                      //     ),
-                      //     color: Colors.white,
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.start,
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       const Text(
-                      //         "Other",
-                      //         style: TextStyle(
-                      //           fontSize: 14,
-                      //           fontWeight: FontWeight.w400,
-                      //           color: Color(0xFF707270),
-                      //         ),
-                      //       ),
-                      //       const Spacer(),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 52,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 15,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(
+                            color: const Color(0xFFE8E8E8),
+                            width: 1,
+                          ),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Non-Binary",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF707270),
+                              ),
+                            ),
+                            const Spacer(),
 
-                      //       Obx(() {
-                      //         bool isSelect =
-                      //             _setupProfileController.selectedMan.value ==
-                      //             "Other";
-                      //         return CustomRadioButton(
-                      //           value: isSelect,
-                      //           onChanged: (val) {
-                      //             if (val) {
-                      //               _setupProfileController.selectedMan.value =
-                      //                   "Other";
-                      //             } else {
-                      //               _setupProfileController.selectedMan.value =
-                      //                   "";
-                      //             }
-                      //           },
-                      //         );
-                      //       }),
-                      //     ],
-                      //   ),
-                      // ),
+                            Obx(() {
+                              bool isSelect =
+                                  _setupProfileController.selectedMan.value ==
+                                  "Non-Binary";
+                              return CustomRadioButton(
+                                value: isSelect,
+                                onChanged: (val) {
+                                  if (val) {
+                                    _setupProfileController.selectedMan.value =
+                                        "Non-Binary";
+                                  } else {
+                                    _setupProfileController.selectedMan.value =
+                                        "";
+                                  }
+                                },
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 52,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 15,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(
+                            color: const Color(0xFFE8E8E8),
+                            width: 1,
+                          ),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Choose All",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF707270),
+                              ),
+                            ),
+                            const Spacer(),
+
+                            Obx(() {
+                              bool isSelect =
+                                  _setupProfileController.selectedMan.value ==
+                                  "Choose All";
+                              return CustomRadioButton(
+                                value: isSelect,
+                                onChanged: (val) {
+                                  if (val) {
+                                    _setupProfileController.selectedMan.value =
+                                        "Choose All";
+                                  } else {
+                                    _setupProfileController.selectedMan.value =
+                                        "";
+                                  }
+                                },
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+
                       const SizedBox(height: 132),
                       CustomButton(
                         onTap: () {

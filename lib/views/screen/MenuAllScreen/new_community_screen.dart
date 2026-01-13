@@ -43,7 +43,7 @@ class _NewCommunityScreenState extends State<NewCommunityScreen> {
                       SizedBox(width: 80),
                       Center(
                         child: const Text(
-                          "New Community ",
+                          "New Society ",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -91,7 +91,7 @@ class _NewCommunityScreenState extends State<NewCommunityScreen> {
                       ),
                       SizedBox(height: 38),
                       Text(
-                        "Name your Community",
+                        "Name your Society",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -100,7 +100,7 @@ class _NewCommunityScreenState extends State<NewCommunityScreen> {
                       ),
                       SizedBox(height: 8),
                       CustomTextField(
-                        hintText: "Community Name",
+                        hintText: "Society Name",
                         filColor: Color(0xFFFFFFFF),
                         filled: true,
                       ),
@@ -108,8 +108,7 @@ class _NewCommunityScreenState extends State<NewCommunityScreen> {
                       SizedBox(height: 68),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 50),
-                        child: CustomButton(onTap: () {},
-                         text: "Create"),
+                        child: CustomButton(onTap: () {}, text: "Create"),
                       ),
                     ],
                   ),

@@ -307,36 +307,59 @@ class _MatcheScreenState extends State<MatcheScreen> {
                       ),
                       const SizedBox(height: 62),
 
-                      Obx(() {
-                        final v = _matchesController
-                            .value
-                            .value; // current slider value
-                        final w = MediaQuery.of(context).size.width - 40;
-                        final left = (w * (v / 200) - 25).clamp(0.0, w - 50);
 
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Slider(
-                              min: 0,
-                              max: 200,
-                              value: v,
-                              activeColor: const Color(0xFF0C312B),
-                              inactiveColor: const Color(0xFFE0E0E0),
-                              onChanged: (val) =>
-                                  _matchesController.value.value =
-                                      val, // update Rx value
-                            ),
-                            Positioned(
-                              top: -35,
-                              left: left,
-                              child: _Bubble(
-                                text: "${v.toStringAsFixed(0)} km",
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
+                           Obx(()=>
+                         Slider(
+                          value: _matchesController.distance.value > 1000
+                              ? 1000
+                              : _matchesController.distance.value,
+                          min: 1,
+                          max: 1000, 
+                          divisions: 1000,
+                          label: _matchesController.distance.value > 1000
+                              ? "Unlimited"
+                              : "${_matchesController.distance.value.round()} km",
+                          onChanged: (val) {
+                            if (val == 1000) {
+                              _matchesController.distance.value =
+                                  double.infinity;
+                            } else {
+                              _matchesController.distance.value = val;
+                            }
+                          },
+                        ),
+                      ),
+
+                      // Obx(() {
+                      //   final v = _matchesController
+                      //       .value
+                      //       .value; // current slider value
+                      //   final w = MediaQuery.of(context).size.width - 40;
+                      //   final left = (w * (v / 200) - 25).clamp(0.0, w - 50);
+
+                      //   return Stack(
+                      //     clipBehavior: Clip.none,
+                      //     children: [
+                      //       Slider(
+                      //         min: 0,
+                      //         max: 200,
+                      //         value: v,
+                      //         activeColor: const Color(0xFF0C312B),
+                      //         inactiveColor: const Color(0xFFE0E0E0),
+                      //         onChanged: (val) =>
+                      //             _matchesController.value.value =
+                      //                 val, // update Rx value
+                      //       ),
+                      //       Positioned(
+                      //         top: -35,
+                      //         left: left,
+                      //         child: _Bubble(
+                      //           text: "${v.toStringAsFixed(0)} km",
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   );
+                     // }),
 
                       const SizedBox(height: 24),
                       Text(
@@ -348,6 +371,8 @@ class _MatcheScreenState extends State<MatcheScreen> {
                         ),
                       ),
                       const SizedBox(height: 40),
+
+
                       Obx(() {
                         final v = _matchesController.rv.value;
 
@@ -412,6 +437,8 @@ class _MatcheScreenState extends State<MatcheScreen> {
                           },
                         );
                       }),
+                    
+                    
                       const SizedBox(height: 42),
 
                       Row(

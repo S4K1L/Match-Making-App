@@ -327,17 +327,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 20,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Thank you and see you again!",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF707270),
-                    ),
-                  ),
+             
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -364,13 +356,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
+                          )
                         ),
                       ),
                       const SizedBox(width: 12),
 
                       Expanded(
-                        child: CustomButton(onTap: () {}, text: "Yes, Logout"),
+                        child: CustomButton(onTap: () {}, text: "Logout"),
                       ),
                     ],
                   ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu..dart';
+import 'package:flutter_extension/views/base/bottom_menu.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_switch.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
@@ -18,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthController _authController = Get.find<AuthController>();
   bool isSwitch = false;
   @override
   Widget build(BuildContext context) {
@@ -98,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _customListTile(
                               onTap: () {
-                               // Get.to(() => const SubscriptionScreen());
+                                // Get.to(() => const SubscriptionScreen());
                               },
                               image: "assets/icons/crown.svg",
                               title: "Subscription",
@@ -200,7 +202,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomMenu(3),
     );
   }
 
@@ -282,7 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  showLogoutBottomSheet(BuildContext context) {
+  void showLogoutBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -290,86 +291,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
       builder: (context) {
-        return Stack(
-          children: [
-            SizedBox.expand(
-              child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 35),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+        return SizedBox(
+          height: 300,
+          child: Stack(
+            children: [
+              SizedBox.expand(
+                child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Logout",
-                    style: TextStyle(
-                      color: AppColors.textColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 35,
+                ),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Logout",
+                      style: TextStyle(
+                        color: AppColors.textColor,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.maxFinite,
-                    height: 0.5,
-                    color: const Color(0xFF222222),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    "Are you sure you want to log out?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF2A2D2A),
-                      fontSize: 20,
+                    const SizedBox(height: 10),
+                    Container(
+                      width: double.maxFinite,
+                      height: 0.5,
+                      color: const Color(0xFF222222),
                     ),
-                  ),
-             
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Are you sure you want to log out?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF2A2D2A),
+                        fontSize: 20,
+                      ),
+                    ),
 
-                  const SizedBox(height: 30),
+                    const SizedBox(height: 30),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Container(
-                            height: 48,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF222222),
-                                fontWeight: FontWeight.w500,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: Container(
+                              height: 48,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              alignment: Alignment.center,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF222222),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          )
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
+                        const SizedBox(width: 12),
 
-                      Expanded(
-                        child: CustomButton(onTap: () {}, text: "Logout"),
-                      ),
-                    ],
-                  ),
-                ],
+                        Expanded(
+                          child: CustomButton(
+                            onTap: () {
+                              _authController.logout();
+                            },
+                            text: "Logout",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

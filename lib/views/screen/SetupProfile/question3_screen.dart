@@ -65,14 +65,13 @@ class _Question3ScreenState extends State<Question3Screen> {
                       ),
                       const SizedBox(height: 86),
 
-                   
-                      Obx(()=>
-                         Slider(
+                      Obx(
+                        () => Slider(
                           value: _setupProfileController.distance.value > 1000
                               ? 1000
                               : _setupProfileController.distance.value,
                           min: 1,
-                          max: 1000, 
+                          max: 1000,
                           divisions: 1000,
                           label: _setupProfileController.distance.value > 1000
                               ? "Unlimited"

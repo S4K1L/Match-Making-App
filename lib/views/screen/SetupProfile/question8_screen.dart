@@ -97,7 +97,7 @@ class _Question8ScreenState extends State<Question8Screen> {
                             },
                             text: "Next",
                           ),
-                          SizedBox(height: 20,)
+                          SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -129,7 +129,7 @@ class _SelectablePillState extends State<SelectablePill> {
       final selected = controller.isSelected(widget.title);
 
       return GestureDetector(
-        onTap: () => controller.toggleItem(widget.title),
+        onTap: () => controller.toggleSelectedItem(widget.title),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

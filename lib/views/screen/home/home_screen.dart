@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/home_controller.dart';
+import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu..dart';
 import 'package:flutter_extension/views/base/story_thumb.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
 import 'package:flutter_extension/views/screen/home/AllSubScreen/details_page.dart';
@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _homeController = Get.put(HomeController());
+  final _userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +334,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomMenu(0),
     );
   }
 
@@ -362,14 +362,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _customAppbar() {
+  AppBar _customAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -382,12 +382,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 4),
-              Text(
-                "Johnson Mate",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF707270),
+              Obx(
+                () => Text(
+                  _userController.userInfo.value!.fullName,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF707270),
+                  ),
                 ),
               ),
             ],

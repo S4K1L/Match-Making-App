@@ -1,11 +1,12 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/setpu_profile_controller.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_extension/views/screen/SetupProfile/question3_screen.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 class Question2Screen extends StatefulWidget {
   const Question2Screen({super.key});
@@ -15,6 +16,8 @@ class Question2Screen extends StatefulWidget {
 }
 
 class _Question2ScreenState extends State<Question2Screen> {
+  final _c = Get.put(SetpuProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,15 +27,15 @@ class _Question2ScreenState extends State<Question2Screen> {
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
           SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                customAppBar(),
-                const SizedBox(height: 24),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  customAppBar(),
+                  const SizedBox(height: 24),
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -79,9 +82,10 @@ class _Question2ScreenState extends State<Question2Screen> {
                           children: [
                             Expanded(
                               child: CountryCodePicker(
-                                onChanged: (code) {},
+                                onChanged: (code) {
+                                  _c.countryCode.value = code.dialCode ?? 'BD';
+                                },
                                 initialSelection: "BD",
-
                                 showCountryOnly: true,
                                 showOnlyCountryWhenClosed: true,
                                 showFlag: false,
@@ -112,11 +116,13 @@ class _Question2ScreenState extends State<Question2Screen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const CustomTextField(
+                      CustomTextField(
+                        controller: _c.provinceController,
                         hintText: "Enter your Province...",
                         filColor: Colors.white,
                         filled: true,
                       ),
+
                       const SizedBox(height: 212),
                       CustomButton(
                         onTap: () {
@@ -126,8 +132,8 @@ class _Question2ScreenState extends State<Question2Screen> {
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

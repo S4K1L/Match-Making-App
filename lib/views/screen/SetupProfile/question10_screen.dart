@@ -76,7 +76,7 @@ class _Question10ScreenState extends State<Question10Screen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                  
+
                         const Center(
                           child: Text(
                             "lifestyle preeerences",
@@ -95,9 +95,9 @@ class _Question10ScreenState extends State<Question10Screen> {
                               .map((item) => SelectablePill(title: item))
                               .toList(),
                         ),
-                  
+
                         const SizedBox(height: 24),
-                  
+
                         CustomButton(
                           onTap: () {
                             Get.to(() => const Question11Screen());

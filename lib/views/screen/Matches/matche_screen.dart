@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/matches_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu..dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
@@ -174,7 +173,6 @@ class _MatcheScreenState extends State<MatcheScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomMenu(1),
     );
   }
 
@@ -307,14 +305,13 @@ class _MatcheScreenState extends State<MatcheScreen> {
                       ),
                       const SizedBox(height: 62),
 
-
-                           Obx(()=>
-                         Slider(
+                      Obx(
+                        () => Slider(
                           value: _matchesController.distance.value > 1000
                               ? 1000
                               : _matchesController.distance.value,
                           min: 1,
-                          max: 1000, 
+                          max: 1000,
                           divisions: 1000,
                           label: _matchesController.distance.value > 1000
                               ? "Unlimited"
@@ -359,8 +356,7 @@ class _MatcheScreenState extends State<MatcheScreen> {
                       //       ),
                       //     ],
                       //   );
-                     // }),
-
+                      // }),
                       const SizedBox(height: 24),
                       Text(
                         "Age",
@@ -371,7 +367,6 @@ class _MatcheScreenState extends State<MatcheScreen> {
                         ),
                       ),
                       const SizedBox(height: 40),
-
 
                       Obx(() {
                         final v = _matchesController.rv.value;
@@ -437,8 +432,7 @@ class _MatcheScreenState extends State<MatcheScreen> {
                           },
                         );
                       }),
-                    
-                    
+
                       const SizedBox(height: 42),
 
                       Row(

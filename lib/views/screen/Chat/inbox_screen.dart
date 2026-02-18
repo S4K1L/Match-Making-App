@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu..dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_extension/views/screen/Chat/chat_screen.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
@@ -161,7 +160,6 @@ class _InboxScreenState extends State<InboxScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomMenu(2),
     );
   }
 
@@ -176,7 +174,7 @@ class _InboxScreenState extends State<InboxScreen> {
 
           InkWell(
             onTap: () {
-                  Get.to(() => const NotificationScreen());
+              Get.to(() => const NotificationScreen());
             },
             child: Container(
               height: 40,
@@ -199,7 +197,4 @@ class _InboxScreenState extends State<InboxScreen> {
       ),
     );
   }
-
-
-
 }

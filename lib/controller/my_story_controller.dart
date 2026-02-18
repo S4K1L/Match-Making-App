@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter_extension/data/model/view_model.dart';
+import 'package:flutter_extension/model/view_model.dart';
 import 'package:flutter_extension/util/image_utils.dart';
 import 'package:flutter_extension/views/screen/home/AllSubScreen/add_story_screen.dart';
 import 'package:get/get.dart';

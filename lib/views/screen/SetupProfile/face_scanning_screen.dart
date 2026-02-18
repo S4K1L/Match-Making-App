@@ -1,17 +1,13 @@
-
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/bottom_menu.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -92,12 +88,14 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
 
     // Eyes open (null-safe)
     if (face.leftEyeOpenProbability != null &&
-        face.leftEyeOpenProbability! < 0.6)
+        face.leftEyeOpenProbability! < 0.6) {
       return false;
+    }
 
     if (face.rightEyeOpenProbability != null &&
-        face.rightEyeOpenProbability! < 0.6)
+        face.rightEyeOpenProbability! < 0.6) {
       return false;
+    }
 
     return true;
   }
@@ -181,15 +179,9 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
 
       debugPrint("Face image saved at $filePath");
 
-      showCustomSnackBar(
-        "Face Picture Captured Successfully",
-        isError: false, 
-      );
+      showCustomSnackBar("Face Picture Captured Successfully", isError: false);
     } catch (e) {
-      showCustomSnackBar(
-        "Image capture failed",
-        isError: true, 
-      );
+      showCustomSnackBar("Image capture failed", isError: true);
     }
   }
 
@@ -242,10 +234,12 @@ class _FaceScanningScreenState extends State<FaceScanningScreen> {
                     ),
                   ),
                   SizedBox(height: 40),
-                  CustomButton(onTap: () {
-                    Get.offAllNamed(AppRoutes.homeScreen);
-                  },
-                   text: "Submit"),
+                  CustomButton(
+                    onTap: () {
+                      Get.offAll(() => CustomBottomNavbar());
+                    },
+                    text: "Submit",
+                  ),
                 ],
               ),
             ),

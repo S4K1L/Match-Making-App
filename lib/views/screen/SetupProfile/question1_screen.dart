@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/setpu_profile_controller.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
+import 'package:flutter_extension/views/base/dob_picker.dart';
 import 'package:flutter_extension/views/screen/SetupProfile/question2_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
 
 class Question1Screen extends StatefulWidget {
   const Question1Screen({super.key});
@@ -16,6 +17,8 @@ class Question1Screen extends StatefulWidget {
 }
 
 class _Question1ScreenState extends State<Question1Screen> {
+  final _c = Get.put(SetpuProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +59,7 @@ class _Question1ScreenState extends State<Question1Screen> {
                         ),
                         const SizedBox(height: 8),
                         CustomTextField(
+                          controller: _c.fullNameController,
                           hintText: "Enter Your Name".toUpperCase(),
                           filColor: Colors.white,
                           filled: true,
@@ -77,20 +81,7 @@ class _Question1ScreenState extends State<Question1Screen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
-                          hintText: "DD/MM/YY".toUpperCase(),
-                          filColor: Colors.white,
-                          filled: true,
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 18,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/icons/calender.svg',
-                            ),
-                          ),
-                        ),
+                        DOBTextField(controller: _c.dobController),
                         const SizedBox(height: 24),
                         Text(
                           "Height",
@@ -100,19 +91,21 @@ class _Question1ScreenState extends State<Question1Screen> {
                             color: Color(0xFF1A1A1A),
                           ),
                         ),
-                        SizedBox(height: 8,),
+                        SizedBox(height: 8),
                         Row(
                           children: [
                             Expanded(
                               child: CustomTextField(
+                                controller: _c.heightFeetController,
                                 hintText: "Feet",
                                 filColor: Colors.white,
                                 filled: true,
                               ),
                             ),
-                            SizedBox(width: 8,),
+                            SizedBox(width: 8),
                             Expanded(
                               child: CustomTextField(
+                                controller: _c.heightInchesController,
                                 hintText: "Inches",
                                 filColor: Colors.white,
                                 filled: true,

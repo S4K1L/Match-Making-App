@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu..dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/group_chat_screen.dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/new_community_screen.dart';
 import 'package:get/get.dart';
@@ -173,7 +172,6 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomMenu(4),
     );
   }
 

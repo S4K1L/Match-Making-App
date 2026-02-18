@@ -38,8 +38,8 @@ class _Question4ScreenState extends State<Question4Screen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Hey krystal, glad you joined us!",
+                      Text(
+                        "Hey ${_setupProfileController.fullNameController.text}, glad you joined us!",
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w700,
@@ -56,8 +56,6 @@ class _Question4ScreenState extends State<Question4Screen> {
                         ),
                       ),
                       const SizedBox(height: 48),
-
-                      
 
                       Container(
                         height: 52,
@@ -108,9 +106,6 @@ class _Question4ScreenState extends State<Question4Screen> {
                           ],
                         ),
                       ),
-
-
-
 
                       const SizedBox(height: 16),
                       Container(
@@ -231,7 +226,4 @@ class _Question4ScreenState extends State<Question4Screen> {
       ),
     );
   }
-
-
-
 }

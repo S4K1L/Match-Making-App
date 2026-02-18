@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../util/app_colors.dart';
 import '../../util/app_constants.dart';
 
@@ -86,7 +84,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             }
             return null;
           },
-          maxLines: widget.maxLines,
+      maxLines: widget.maxLines,
       cursorColor: AppColors.primaryColor,
       obscureText: widget.isPassword ? obscureText : false,
       style: const TextStyle(
@@ -121,7 +119,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
               )
             : widget.suffixIcon,
-        prefixIconConstraints: BoxConstraints(minHeight: 24.w, minWidth: 24.w),
+        prefixIconConstraints: BoxConstraints(minHeight: 24, minWidth: 24),
         labelText: widget.labelText,
         filled: widget.filled ?? false,
         hintText: widget.hintText,

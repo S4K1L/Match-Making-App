@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_extension/views/screen/Auth/email_verify_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,7 +18,20 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final AuthController _authController = Get.find<AuthController>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool isChecked = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 10),
                 CustomTextField(
+                  controller: _emailController,
                   filColor: const Color(0xFFFFFFFF),
                   suffixIcon: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -59,7 +75,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  " password".toUpperCase(),
+                  "Enter New password".toUpperCase(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'Cinzel',
@@ -68,7 +84,26 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const CustomTextField(
+                CustomTextField(
+                  controller: _passwordController,
+                  isPassword: true,
+                  filColor: Color(0xFFFFFFFF),
+
+                  filled: true,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Enter Confirm password".toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Cinzel',
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                CustomTextField(
+                  controller: _confirmPasswordController,
                   isPassword: true,
                   filColor: Color(0xFFFFFFFF),
 
@@ -95,7 +130,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
 
                     Expanded(
-           
                       child: RichText(
                         textAlign: TextAlign.left,
                         text: TextSpan(
@@ -156,12 +190,54 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
 
                 const SizedBox(height: 42),
-                CustomButton(
-                  onTap: () {
-                    Get.to(() => const EmailVerifyScreen());
-                  },
-                  text: "Sign up".toUpperCase(),
-                ),
+                Obx(() {
+                  String email = _emailController.text.trim();
+                  String password = _passwordController.text.trim();
+                  String confirmPassword = _confirmPasswordController.text
+                      .trim();
+                  return CustomButton(
+                    loading: _authController.isLoading.value,
+                    onTap: () async {
+                      if (email.isEmpty ||
+                          password.isEmpty ||
+                          confirmPassword.isEmpty) {
+                        showCustomSnackBar(
+                          "Please fill all the fields",
+                          isError: true,
+                        );
+                        return;
+                      }
+                      if (password != confirmPassword) {
+                        showCustomSnackBar(
+                          "Password and confirm password do not match",
+                          isError: true,
+                        );
+                        return;
+                      }
+
+                      if (!isChecked) {
+                        showCustomSnackBar(
+                          "Please accept terms and conditions",
+                          isError: true,
+                        );
+                        return;
+                      }
+
+                      String response = await _authController.signup(
+                        email.trim(),
+                        password.trim(),
+                        confirmPassword.trim(),
+                      );
+
+                      if (response == "success") {
+                        Get.to(() => EmailVerifyScreen(email: email));
+                      } else {
+                        showCustomSnackBar(response, isError: true);
+                      }
+                    },
+                    text: "Sign up".toUpperCase(),
+                  );
+                }),
                 const SizedBox(height: 20),
 
                 Center(

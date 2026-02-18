@@ -82,16 +82,22 @@ class _Question5ScreenState extends State<Question5Screen> {
 
                             Obx(() {
                               bool isSelect =
-                                  _setupProfileController.selectedMan.value ==
+                                  _setupProfileController
+                                      .selectedLookingFor
+                                      .value ==
                                   "Women";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "Women";
                                   } else {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "";
                                   }
                                 },
@@ -133,16 +139,22 @@ class _Question5ScreenState extends State<Question5Screen> {
 
                             Obx(() {
                               bool isSelect =
-                                  _setupProfileController.selectedMan.value ==
+                                  _setupProfileController
+                                      .selectedLookingFor
+                                      .value ==
                                   "Men";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "Men";
                                   } else {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "";
                                   }
                                 },
@@ -184,16 +196,22 @@ class _Question5ScreenState extends State<Question5Screen> {
 
                             Obx(() {
                               bool isSelect =
-                                  _setupProfileController.selectedMan.value ==
+                                  _setupProfileController
+                                      .selectedLookingFor
+                                      .value ==
                                   "Non-Binary";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "Non-Binary";
                                   } else {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "";
                                   }
                                 },
@@ -235,16 +253,22 @@ class _Question5ScreenState extends State<Question5Screen> {
 
                             Obx(() {
                               bool isSelect =
-                                  _setupProfileController.selectedMan.value ==
+                                  _setupProfileController
+                                      .selectedLookingFor
+                                      .value ==
                                   "Choose All";
                               return CustomRadioButton(
                                 value: isSelect,
                                 onChanged: (val) {
                                   if (val) {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "Choose All";
                                   } else {
-                                    _setupProfileController.selectedMan.value =
+                                    _setupProfileController
+                                            .selectedLookingFor
+                                            .value =
                                         "";
                                   }
                                 },

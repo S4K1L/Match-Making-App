@@ -1,8 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/bottom_menu.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
 import 'package:flutter_extension/views/base/system_chrom.dart';
 import 'package:flutter_extension/views/screen/Auth/forget_password_screen.dart';
@@ -17,6 +20,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final AuthController _authController = Get.find<AuthController>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   void initState() {
     systemChrom();
@@ -52,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 CustomTextField(
+                  controller: _emailController,
                   filColor: const Color(0xFFFFFFFF),
                   suffixIcon: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -73,10 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const CustomTextField(
+                CustomTextField(
+                  controller: _passwordController,
                   isPassword: true,
-                  filColor: Color(0xFFFFFFFF),
-
+                  filColor: Colors.white,
                   filled: true,
                 ),
                 const SizedBox(height: 10),
@@ -98,12 +105,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                CustomButton(
-                  onTap: () {
-                    Get.offAllNamed(AppRoutes.homeScreen);
-                  },
-                  text: "Login".toUpperCase(),
-                ),
+                Obx(() {
+                  return CustomButton(
+                    loading: _authController.isLoading.value,
+                    onTap: () async {
+                      final response = await _authController.login(
+                        _emailController.text.trim(),
+                        _passwordController.text.trim(),
+                      );
+                      if (response == "success") {
+                        Get.offAll(() => CustomBottomNavbar());
+                      } else {
+                        showCustomSnackBar(response, isError: true);
+                      }
+                    },
+                    text: "Login".toUpperCase(),
+                  );
+                }),
                 const SizedBox(height: 20),
 
                 Center(

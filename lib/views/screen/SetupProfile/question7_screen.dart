@@ -7,14 +7,14 @@ import 'package:flutter_extension/views/base/custom_radio_button.dart';
 import 'package:flutter_extension/views/screen/SetupProfile/question8_screen.dart';
 import 'package:get/get.dart';
 
-class QuestionScreen7 extends StatefulWidget {
-  const QuestionScreen7({super.key});
+class Question7Screen extends StatefulWidget {
+  const Question7Screen({super.key});
 
   @override
-  State<QuestionScreen7> createState() => _QuestionScreen7State();
+  State<Question7Screen> createState() => _Question7ScreenState();
 }
 
-class _QuestionScreen7State extends State<QuestionScreen7> {
+class _Question7ScreenState extends State<Question7Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

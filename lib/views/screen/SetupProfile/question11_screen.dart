@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/setpu_profile_controller.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/views/screen/SetupProfile/add_photo_screen.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 
 class Question11Screen extends StatefulWidget {
   const Question11Screen({super.key});
@@ -14,6 +15,8 @@ class Question11Screen extends StatefulWidget {
 }
 
 class _Question11ScreenState extends State<Question11Screen> {
+  final _c = Get.put(SetpuProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,17 +26,15 @@ class _Question11ScreenState extends State<Question11Screen> {
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
           SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: customAppBar(),
-                ),
-                const SizedBox(height: 24),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
 
-                SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
+              child: Column(
+                children: [
+                  customAppBar(),
+                  const SizedBox(height: 24),
+
+                  Column(
                     children: [
                       Center(
                         child: Image.asset(
@@ -67,6 +68,7 @@ class _Question11ScreenState extends State<Question11Screen> {
                       const SizedBox(height: 24),
 
                       TextFormField(
+                        controller: _c.bioController,
                         maxLines: 4,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
@@ -112,9 +114,7 @@ class _Question11ScreenState extends State<Question11Screen> {
                         children: [
                           Expanded(
                             child: InkWell(
-                              onTap: () {
-                                
-                              },
+                              onTap: () {},
                               child: Container(
                                 height: 52,
                                 width: double.infinity,
@@ -141,19 +141,30 @@ class _Question11ScreenState extends State<Question11Screen> {
                           ),
                           const SizedBox(width: 18),
                           Expanded(
-                            child: CustomButton(
-                              onTap: () {
-                                Get.to(() => const AddPhotoScreen());
-                              },
-                              text: "Next",
+                            child: Obx(
+                              () => CustomButton(
+                                loading: _c.profileUpdating.value,
+                                onTap: () async {
+                                  final response = await _c.updateProfile();
+                                  if (response) {
+                                    Get.to(() => const AddPhotoScreen());
+                                  } else {
+                                    showCustomSnackBar(
+                                      "Something went wrong",
+                                      isError: true,
+                                    );
+                                  }
+                                },
+                                text: "Next",
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

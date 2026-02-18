@@ -54,9 +54,9 @@ class _Question9ScreenState extends State<Question9Screen> {
                             color: Color(0xFF2A2D2A),
                           ),
                         ),
-                  
+
                         const SizedBox(height: 24),
-                  
+
                         Wrap(
                           spacing: 10,
                           runSpacing: 12,
@@ -69,17 +69,16 @@ class _Question9ScreenState extends State<Question9Screen> {
                               )
                               .toList(),
                         ),
-                  
-                  
+
                         const SizedBox(height: 30),
-                  
+
                         CustomButton(
                           onTap: () {
                             Get.to(() => const Question10Screen());
                           },
                           text: "Next",
                         ),
-                        SizedBox(height: 20,)
+                        SizedBox(height: 20),
                       ],
                     ),
                   ),

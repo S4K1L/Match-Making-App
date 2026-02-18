@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_extension/data/model/story_model.dart';
+import 'package:flutter_extension/model/story_model.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -53,9 +53,6 @@ class HomeController extends GetxController {
     }
   }
 
-
-
-
   @override
   void onInit() {
     super.onInit();
@@ -88,8 +85,6 @@ class HomeController extends GetxController {
         (currentIndex.value - 1 + stories.length) % stories.length;
     startProgress();
   }
-
-
 
   @override
   void onClose() {

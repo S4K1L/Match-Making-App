@@ -4,7 +4,7 @@ import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_radio_button.dart';
-import 'package:flutter_extension/views/screen/SetupProfile/question_screen7.dart';
+import 'package:flutter_extension/views/screen/SetupProfile/question7_screen.dart';
 import 'package:get/get.dart';
 
 class Question6Screen extends StatefulWidget {
@@ -327,7 +327,7 @@ class _Question6ScreenState extends State<Question6Screen> {
 
                       CustomButton(
                         onTap: () {
-                          Get.to(() => const QuestionScreen7());
+                          Get.to(() => const Question7Screen());
                         },
                         text: "Next",
                       ),

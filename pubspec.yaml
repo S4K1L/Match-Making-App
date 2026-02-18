@@ -13,7 +13,6 @@ dependencies:
   cupertino_icons:
   get:
   shared_preferences:
-  flutter_screenutil:
   flutter_svg:
   flutter_spinkit:
   cached_network_image:
@@ -27,6 +26,7 @@ dependencies:
   google_mlkit_face_detection: ^0.13.1
   path_provider: ^2.1.5
   path: ^1.9.1
+  mime: ^2.0.0
 
 
 
@@ -38,7 +38,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/language/
     - assets/images/
     - assets/icons/
 

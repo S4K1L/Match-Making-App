@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 
 class AppColors {
-  static Color primaryColor = const Color(0xFF2683EB);
+  static Color primaryColor = const Color(0xFF0C312B);
   static Color backgroundColor = const Color(0xFF010101);
   static Color cardColor = const Color(0xFF2F2F2F);
   static Color cardLightColor = const Color(0xFF555555);

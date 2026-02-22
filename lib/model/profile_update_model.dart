@@ -4,6 +4,7 @@ class ProfileUpdateModel {
   final String? phone;
   final String? bio;
   final String? gender;
+  final String? country;
   final String? city;
   final String? province;
   final String? location;
@@ -25,6 +26,7 @@ class ProfileUpdateModel {
     this.phone,
     this.bio,
     this.gender,
+    this.country,
     this.city,
     this.province,
     this.location,
@@ -52,6 +54,7 @@ class ProfileUpdateModel {
     if (gender != null && gender!.isNotEmpty) {
       map['gender'] = gender!.toUpperCase(); // Uppercase if required by the API
     }
+    if (country != null && country!.isNotEmpty) map['country'] = country;
     if (city != null && city!.isNotEmpty) map['city'] = city;
     if (province != null && province!.isNotEmpty) map['province'] = province;
     if (location != null && location!.isNotEmpty) map['location'] = location;
@@ -69,15 +72,18 @@ class ProfileUpdateModel {
           .map((e) => e.toUpperCase().replaceAll(' ', '_'))
           .toList();
     }
-    if (lookingFor != null && lookingFor!.isNotEmpty)
+    if (lookingFor != null && lookingFor!.isNotEmpty) {
       map['looking_for'] = lookingFor;
+    }
     if (professionalField != null && professionalField!.isNotEmpty) {
       map['professional_field'] = professionalField;
     }
-    if (interests != null && interests!.isNotEmpty)
+    if (interests != null && interests!.isNotEmpty) {
       map['interests'] = interests;
-    if (lifestyle != null && lifestyle!.isNotEmpty)
+    }
+    if (lifestyle != null && lifestyle!.isNotEmpty) {
       map['lifestyle'] = lifestyle;
+    }
     if (hobbies != null && hobbies!.isNotEmpty) map['hobbies'] = hobbies;
 
     return map;

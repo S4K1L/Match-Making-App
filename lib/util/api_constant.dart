@@ -37,4 +37,6 @@ class ApiConstant {
   static const whoLikedMe = 'account/who-liked-me/';
   static const searchUsers = 'account/users/search/';
   static const filterUsers = 'account/users/filter/';
+
+  static const notification = 'mutual-system/notifications/';
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
-import 'package:flutter_extension/controller/splash_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/bottom_menu.dart';

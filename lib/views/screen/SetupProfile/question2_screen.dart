@@ -49,7 +49,7 @@ class _Question2ScreenState extends State<Question2Screen> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "Add your City And Province so we can connect you better.",
+                        "Add your Country And Province so we can connect you better.",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -58,7 +58,7 @@ class _Question2ScreenState extends State<Question2Screen> {
                       ),
                       const SizedBox(height: 48),
                       const Text(
-                        "City",
+                        "Country",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -105,6 +105,22 @@ class _Question2ScreenState extends State<Question2Screen> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        "City",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      CustomTextField(
+                        controller: _c.cityController,
+                        hintText: "Enter your city...",
+                        filColor: Colors.white,
+                        filled: true,
                       ),
                       const SizedBox(height: 12),
                       const Text(

@@ -126,10 +126,10 @@ class _SelectablePillState extends State<SelectablePill> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final selected = controller.isSelected(widget.title);
+      final selected = controller.isSelectedProfession(widget.title);
 
       return GestureDetector(
-        onTap: () => controller.toggleSelectedItem(widget.title),
+        onTap: () => controller.toggleProfessionSelectedItem(widget.title),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

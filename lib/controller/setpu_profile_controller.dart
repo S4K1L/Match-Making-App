@@ -87,12 +87,23 @@ class SetpuProfileController extends GetxController {
     }
   }
 
+  void toggleProfessionSelectedItem(String item) {
+    if (selectedProfession.contains(item)) {
+      selectedProfession.remove(item);
+    } else {
+      selectedProfession.add(item);
+    }
+  }
+
   bool isSelectedLifeStype(String item) => selectedLifeStyle.contains(item);
   var selectedRelations = <String>[].obs;
 
   final RxSet<String> selected = <String>{}.obs;
+  final RxSet<String> selectedProfession = <String>{}.obs;
 
   bool isSelected(String item) => selected.contains(item);
+
+  bool isSelectedProfession(String item) => selectedProfession.contains(item);
 
   void toggle(String key) {
     if (selected.contains(key)) {
@@ -193,6 +204,8 @@ class SetpuProfileController extends GetxController {
       heightFeet: feet,
       heightInches: inches,
 
+      country: countryCode.trim().isEmpty ? null : countryCode.trim(),
+
       // City and Province
       city: cityController.text.trim().isEmpty
           ? null
@@ -226,7 +239,9 @@ class SetpuProfileController extends GetxController {
           : [selectedLookingFor.value],
 
       // Professional field (array)
-      professionalField: selectedItems.isEmpty ? null : selectedItems.toList(),
+      professionalField: selectedProfession.isEmpty
+          ? null
+          : selectedProfession.toList(),
 
       // Interests (array)
       interests: selectedHobbies.isEmpty ? null : selectedHobbies.toList(),

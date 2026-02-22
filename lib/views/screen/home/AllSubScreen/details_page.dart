@@ -1,19 +1,31 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/connection_controller.dart';
 import 'package:flutter_extension/model/global_story_model.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/pop_up_sheet.dart';
 import 'package:flutter_extension/views/screen/Chat/chat_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class DetailsPage extends StatelessWidget {
+class DetailsPage extends StatefulWidget {
   final GlobalStoryModel globalStoryModel;
-
   const DetailsPage({super.key, required this.globalStoryModel});
 
   @override
+  State<DetailsPage> createState() => _DetailsPageState();
+}
+
+class _DetailsPageState extends State<DetailsPage> {
+  final ConnectionController connectionController = Get.put(
+    ConnectionController(),
+  );
+
+  @override
   Widget build(BuildContext context) {
-    final user = globalStoryModel;
+    final user = widget.globalStoryModel;
 
     return Scaffold(
       body: Stack(
@@ -138,18 +150,36 @@ class DetailsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
-                        Text(
-                          user.username ?? user.username ?? "",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF1A1A1A),
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              "${user.age} Age",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF707270),
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.location_on,
+                              color: Color(0xFF707270),
+                              size: 12,
+                            ),
+                            SizedBox(width: 2),
+                            Text(
+                              "${user.distance} Km",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF707270),
+                              ),
+                            ),
+                          ],
                         ),
 
                         const SizedBox(height: 16),
 
-                        /// HOBBIES
                         Wrap(
                           spacing: 12,
                           runSpacing: 12,
@@ -162,16 +192,27 @@ class DetailsPage extends StatelessWidget {
 
                         _heading("My Bio"),
                         const SizedBox(height: 8),
-                        _subText("No bio available"),
+                        _subText(user.bio ?? "No bio available"),
 
                         const SizedBox(height: 20),
 
                         _heading("Location"),
                         const SizedBox(height: 8),
-                        _subText("Location not available"),
+                        _subText(user.location ?? "Location not available"),
 
                         const SizedBox(height: 20),
 
+                        _heading("I’m looking for"),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: (user.hobbies ?? [])
+                              .map((e) => _buildContainer(e))
+                              .toList(),
+                        ),
+
+                        const SizedBox(height: 20),
                         _heading("Photos"),
                         const SizedBox(height: 10),
 
@@ -208,6 +249,7 @@ class DetailsPage extends StatelessWidget {
                         const SizedBox(height: 30),
 
                         /// MESSAGE BUTTON
+                        //TODO: Need to call the create chat api
                         Center(
                           child: InkWell(
                             onTap: () => Get.to(() => const ChatScreen()),
@@ -248,21 +290,49 @@ class DetailsPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _circleBtn(
-                              Icons.close,
+                              "cross",
                               () => Get.back(),
-                              color: Colors.white,
+                              gradient: false,
                             ),
                             const SizedBox(width: 20),
-                            _circleBtn(Icons.favorite, () {}, gradient: true),
+                            Obx(
+                              () => _circleBtn(
+                                "love",
+                                () {
+                                  connectionController.toggleLike(
+                                    user.userId ?? 0,
+                                  );
+                                },
+                                gradient: true,
+                                color: connectionController.isLiked.value
+                                    ? Colors.red
+                                    : Colors.white,
+                              ),
+                            ),
                           ],
                         ),
 
                         const SizedBox(height: 30),
 
-                        _actionBtn("Block", () {}),
+                        _actionBtn("Block", () {
+                          showCustomBottomSheet(
+                            context,
+                            "Block User",
+                            "Are you sure you want to block this user?",
+                            () {
+                              connectionController.blockUser(
+                                user.userId.toString(),
+                              );
+                            },
+                          );
+                        }),
                         const SizedBox(height: 10),
                         _actionBtn("Report an Issue", () {
-                          Get.to(() => const ReportAndIssueScreen());
+                          Get.to(
+                            () => ReportAndIssueScreen(
+                              id: user.userId.toString(),
+                            ),
+                          );
                         }),
 
                         const SizedBox(height: 30),
@@ -298,12 +368,31 @@ class DetailsPage extends StatelessWidget {
     );
   }
 
+  Container _buildContainer(String text) {
+    return Container(
+      height: 34,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF707270), width: 1),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF4F595E),
+        ),
+      ),
+    );
+  }
+
   Widget _subText(String text) {
     return Text(text, style: const TextStyle(fontSize: 14, color: Colors.grey));
   }
 
   Widget _circleBtn(
-    IconData icon,
+    String icon,
     VoidCallback onTap, {
     bool gradient = false,
     Color? color,
@@ -311,18 +400,27 @@ class DetailsPage extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 70,
-        width: 70,
+        height: 78,
+        width: 78,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: gradient ? null : color ?? Colors.white,
+          color: gradient == true ? null : Colors.white,
           gradient: gradient
               ? const LinearGradient(
                   colors: [Color(0xFF18433B), Color(0xFF0C312B)],
                 )
               : null,
         ),
-        child: Icon(icon, color: gradient ? Colors.white : Colors.black),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: SvgPicture.asset(
+            "assets/icons/$icon.svg",
+            height: 40,
+            width: 40,
+            // ignore: unnecessary_null_in_if_null_operators
+            color: color ?? null,
+          ),
+        ),
       ),
     );
   }
@@ -336,6 +434,7 @@ class DetailsPage extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           color: const Color(0xFFEBE1BF),
+          border: Border.all(color: Color(0xFFDE9C13), width: 1),
         ),
         child: Center(child: Text(text)),
       ),

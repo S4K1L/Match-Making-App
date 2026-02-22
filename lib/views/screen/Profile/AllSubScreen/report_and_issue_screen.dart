@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/connection_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_radio_button.dart';
 import 'package:get/get.dart';
 
-class ReportAndIssueScreen extends StatefulWidget {
-  const ReportAndIssueScreen({super.key});
+class ReportAndIssueScreen extends StatelessWidget {
+  final String id;
+  ReportAndIssueScreen({super.key, required this.id});
 
-  @override
-  State<ReportAndIssueScreen> createState() => _ReportAndIssueScreenState();
-}
-
-class _ReportAndIssueScreenState extends State<ReportAndIssueScreen> {
-  final List<bool> _value = [false, false, false, false, false, false, false];
+  final ConnectionController _connectionController =
+      Get.find<ConnectionController>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +21,17 @@ class _ReportAndIssueScreenState extends State<ReportAndIssueScreen> {
           SizedBox.expand(
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
-          const SizedBox(height: 90),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
+                    onTap: () => Get.back(),
                     child: const Icon(Icons.close, color: Color(0xFF707270)),
                   ),
+
                   const SizedBox(height: 8),
 
                   Text(
@@ -47,152 +42,84 @@ class _ReportAndIssueScreenState extends State<ReportAndIssueScreen> {
                       color: AppColors.textColor,
                     ),
                   ),
+
                   const SizedBox(height: 4),
+
                   const Text(
                     "this is anonymous and they aren't notified that they are blocked",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF4F595E),
-                    ),
+                    style: TextStyle(fontSize: 16, color: Color(0xFF4F595E)),
                   ),
 
                   const SizedBox(height: 48),
-                  Row(
-                    children: [
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Harassment or bullying",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const Spacer(),
-                      CustomRadioButton(
-                        value: _value[0],
-                        onChanged: (val) {
-                          setState(() {
-                            _value[0] = val;
-                          });
+
+                  /// 🔥 Dynamic List
+                  Obx(
+                    () => Column(
+                      children: List.generate(
+                        _connectionController.reasons.length,
+                        (index) {
+                          final reason = _connectionController.reasons[index];
+
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 5,
+                                    width: 5,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xFF555755),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+
+                                  Expanded(
+                                    child: Text(
+                                      reason,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFF555755),
+                                      ),
+                                    ),
+                                  ),
+
+                                  CustomRadioButton(
+                                    value:
+                                        _connectionController
+                                            .selectedReasonIndex
+                                            .value ==
+                                        index,
+                                    onChanged: (val) {
+                                      _connectionController.reasonSelect(index);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              _customDivider(),
+                              const SizedBox(height: 16),
+                            ],
+                          );
                         },
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _customDivider(),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Offensive content",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const Spacer(),
-                      CustomRadioButton(
-                        value: _value[1],
-                        onChanged: (val) {
-                          setState(() {
-                            _value[1] = val;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _customDivider(),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Technical problem",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const Spacer(),
-                      CustomRadioButton(
-                        value: _value[2],
-                        onChanged: (val) {
-                          setState(() {
-                            _value[2] = val;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _customDivider(),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "Other issue",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF555755),
-                        ),
-                      ),
-                      const Spacer(),
-                      CustomRadioButton(
-                        value: _value[3],
-                        onChanged: (val) {
-                          setState(() {
-                            _value[3] = val;
-                          });
-                        },
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 32),
 
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 103),
-                      child: CustomButton(onTap: () {}, text: "Submit"),
+                      child: Obx(
+                        () => CustomButton(
+                          loading: _connectionController.isLoading.value,
+                          onTap: () {
+                            _connectionController.reportUser(id);
+                          },
+                          text: "Submit",
+                        ),
+                      ),
                     ),
                   ),
                 ],

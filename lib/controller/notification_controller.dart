@@ -1,26 +1,36 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/model/notification_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:get/get.dart';
 
 class NotificationController extends GetxController {
   final ApiService _apiService = ApiService();
-  final RxList notifications = [].obs;
+
+  RxList<NotificationModel> notifications = <NotificationModel>[].obs;
   RxBool isLoading = false.obs;
 
-  void fetchNotifications() async {
+  Future<void> fetchNotifications() async {
     isLoading.value = true;
+
     try {
       final response = await _apiService.get(
         ApiConstant.notification,
         authReq: true,
       );
+
       final body = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final list = (body['data'] as List).map((e) => e).toList();
-        notifications.value = list;
+        final List dataList = body['data'] ?? [];
+
+        notifications.value = dataList
+            .map((e) => NotificationModel.fromJson(e))
+            .toList();
+      } else {
+        notifications.clear();
       }
     } catch (e) {
       debugPrint("Error: $e");

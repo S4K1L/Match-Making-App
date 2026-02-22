@@ -33,11 +33,17 @@ class GlobalStoryCardView extends StatelessWidget {
         height: 500,
         width: double.infinity,
         child: Obx(() {
-          if (controller.allStories.isEmpty) {
+          if (controller.globalStories.isEmpty) {
             return const Center(child: Text("No Stories"));
           }
 
-          final story = controller.allStories[controller.currentIndex.value];
+          final safeIndex = controller.currentIndex.value;
+
+          if (safeIndex >= controller.globalStories.length) {
+            return const Center(child: Text("Invalid Index"));
+          }
+
+          final story = controller.globalStories[safeIndex];
           final images = controller.getCurrentImages();
 
           return Stack(
@@ -83,11 +89,13 @@ class GlobalStoryCardView extends StatelessWidget {
                                               controller.currentImageIndex.value
                                         ? 1
                                         : 0,
-                                    backgroundColor: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+
+                                    backgroundColor: AppColors.primaryColor,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      AppColors.primaryColor,
+                                      Colors.white,
                                     ),
-                                    minHeight: 4,
+                                    minHeight: 5,
                                   ),
                                 ),
                               );
@@ -102,7 +110,8 @@ class GlobalStoryCardView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (story.isOnline == true)
+                              if (story.isOnline != null &&
+                                  story.isOnline == true)
                                 const Row(
                                   children: [
                                     Icon(

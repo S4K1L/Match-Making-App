@@ -19,6 +19,7 @@ class CustomTextField extends StatefulWidget {
   final bool? isEmail;
   final bool? filled;
   final int? maxLines;
+  final int? minLines;
 
   const CustomTextField({
     super.key,
@@ -36,6 +37,7 @@ class CustomTextField extends StatefulWidget {
     this.filColor,
     this.labelText,
     this.maxLines = 1,
+    this.minLines = 1,
     this.isPassword = false,
     this.filled,
   });
@@ -85,6 +87,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             return null;
           },
       maxLines: widget.maxLines,
+      minLines: widget.minLines,
       cursorColor: AppColors.primaryColor,
       obscureText: widget.isPassword ? obscureText : false,
       style: const TextStyle(

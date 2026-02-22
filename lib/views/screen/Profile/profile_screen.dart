@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
+import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/base/bottom_menu.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_switch.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/edit_profile_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/change_password_screen.dart';
+import 'package:flutter_extension/views/screen/Profile/AllSubScreen/subscription_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -20,6 +22,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthController _authController = Get.find<AuthController>();
+  final UserController _userController = Get.find<UserController>();
   bool isSwitch = false;
   @override
   Widget build(BuildContext context) {
@@ -45,35 +48,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Center(
-                        child: Container(
-                          height: 92,
-                          width: 92,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: const DecorationImage(
-                              image: AssetImage("assets/images/amiliva.png"),
-                              fit: BoxFit.cover,
-                            ),
-                            border: Border.all(
-                              color: const Color(0xFF707270),
-                              width: 2,
-                            ),
-                          ),
+                      Obx(
+                        () => CircleAvatar(
+                          radius: 46,
+                          backgroundImage: _buildProfileImage(),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          "Tacos al Pastor",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textColor,
-                          ),
+                      Text(
+                        _userController.userInfo.value?.fullName ?? "",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textColor,
                         ),
                       ),
 
@@ -100,10 +90,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _customListTile(
                               onTap: () {
-                                // Get.to(() => const SubscriptionScreen());
+                                Get.to(() => const SubscriptionScreen());
                               },
                               image: "assets/icons/crown.svg",
                               title: "Subscription",
+                            ),
+
+                            _customListTile(
+                              onTap: () {
+                                Get.to(() => const ChangePasswordScreen());
+                              },
+                              image: "assets/icons/privacy.svg",
+                              title: "Privacy Policy",
                             ),
                             _customListTile(
                               onTap: () {
@@ -111,6 +109,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               image: "assets/icons/password.svg",
                               title: "Password Change",
+                            ),
+                            _customListTile(
+                              onTap: () {
+                                Get.to(() => const ChangePasswordScreen());
+                              },
+                              image: "assets/icons/password.svg",
+                              title: "Delete Account",
                             ),
 
                             ListTile(
@@ -205,6 +210,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  ImageProvider _buildProfileImage() {
+    final profilePic = _userController.userInfo.value?.profilePic;
+
+    if (profilePic == null || profilePic.isEmpty) {
+      return const AssetImage("assets/images/profile.png");
+    }
+
+    if (!profilePic.startsWith("http")) {
+      return NetworkImage("${ApiConstant.BASE_URL_IMAGE}$profilePic");
+    }
+
+    return NetworkImage(profilePic);
+  }
+
   ListTile _customListTile({
     required String image,
     required String title,
@@ -225,7 +244,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
 
         child: Center(
-          child: SvgPicture.asset(image, color: const Color(0xFFF6C53E)),
+          child: SvgPicture.asset(
+            image,
+            color: const Color(0xFFF6C53E),
+            height: 24,
+            width: 24,
+          ),
         ),
       ),
       title: Text(

@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _homeController.fetchAllStories();
+    _homeController.fetchData();
   }
 
   @override
@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _customAppbar(),
 
                   const SizedBox(height: 22),
+                  //TODO: Story Details work left
                   StoryListView(controller: _homeController),
                   const SizedBox(height: 18),
                   const Text(

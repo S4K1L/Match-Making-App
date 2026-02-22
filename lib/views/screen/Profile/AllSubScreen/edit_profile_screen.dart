@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/profile_controller.dart';
+import 'package:flutter_extension/controller/setpu_profile_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
@@ -15,7 +18,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _profileController = Get.put(ProfileController());
+  final SetpuProfileController _setupController = Get.put(
+    SetpuProfileController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -46,56 +51,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 92,
-                                width: 92,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: const AssetImage(
-                                      "assets/images/amiliva.png",
-                                    ),
-                                    fit: BoxFit.cover,
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.black.withValues(alpha: 0.5),
-                                      BlendMode.darken,
-                                    ),
-                                  ),
-                                  border: Border.all(
-                                    color: const Color(0xFF707270),
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 35,
-                                left: 35,
-                                child: SvgPicture.asset(
-                                  "assets/icons/edit.svg",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        profileImagePickerUI(_setupController),
                         const SizedBox(height: 22),
 
                         _headingText(text: "Full Name"),
                         const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: "Tascos al pastor",
+                        CustomTextField(
+                          controller: _setupController.fullNameController,
+                          hintText: "Enter your full name",
                           filColor: Colors.white,
                           filled: true,
                         ),
                         const SizedBox(height: 16),
                         _headingText(text: "Bio"),
                         const SizedBox(height: 8),
-                        const CustomTextField(
-                          maxLines: 4,
-                          hintText:
-                              "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard",
+                        CustomTextField(
+                          controller: _setupController.bioController,
+                          maxLines: 10,
+                          minLines: 1,
+                          hintText: "Enter your bio",
                           filColor: Colors.white,
                           filled: true,
                         ),
@@ -103,10 +77,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const SizedBox(height: 16),
                         _headingText(text: "Height"),
                         const SizedBox(height: 8),
-                        const Row(
+                        Row(
                           children: [
                             Expanded(
                               child: CustomTextField(
+                                controller:
+                                    _setupController.heightFeetController,
                                 hintText: "Feet",
                                 filColor: Colors.white,
                                 filled: true,
@@ -115,6 +91,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             SizedBox(width: 13),
                             Expanded(
                               child: CustomTextField(
+                                controller:
+                                    _setupController.heightInchesController,
                                 hintText: "inches",
                                 filColor: Colors.white,
                                 filled: true,
@@ -124,21 +102,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         _headingText(text: "Hobbies"),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: "What are you into?",
-                          filColor: Colors.white,
-                          filled: true,
-                        ),
+                        // const SizedBox(height: 8),
+                        // const CustomTextField(
+                        //   hintText: "What are you into?",
+                        //   filColor: Colors.white,
+                        //   filled: true,
+                        // ),
 
-                        const SizedBox(height: 16),
-                        _headingText(text: "You might like..."),
+                        // const SizedBox(height: 16),
+                        // _headingText(text: "You might like..."),
                         const SizedBox(height: 12),
 
                         Wrap(
                           spacing: 10,
                           runSpacing: 12,
-                          children: _profileController.hobbies
+                          children: _setupController.hobbies
                               .map(
                                 (hobby) => SelectablePill(
                                   title: hobby["name"],
@@ -149,7 +127,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
 
                         const SizedBox(height: 50),
-                        CustomButton(onTap: () {}, text: "Update"),
+                        Obx(
+                          () => CustomButton(
+                            loading: _setupController.profileUpdating.value,
+                            onTap: () {
+                              _setupController.editProfile();
+                            },
+                            text: "Update",
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -160,6 +146,94 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ],
       ),
     );
+  }
+
+  Widget profileImagePickerUI(SetpuProfileController c) {
+    return Obx(() {
+      final picked = c.profileImage.value;
+      final isUploading = c.profilePhotoUploading.value;
+
+      ImageProvider imageProvider;
+
+      if (picked != null && picked.path.isNotEmpty) {
+        imageProvider = FileImage(File(picked.path));
+      } else {
+        imageProvider = const AssetImage("assets/images/profile.png");
+      }
+
+      return Column(
+        children: [
+          GestureDetector(
+            onTap: isUploading ? null : c.profileImagePicker,
+            child: Center(
+              child: Stack(
+                children: [
+                  Container(
+                    height: 92,
+                    width: 92,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.15),
+                          BlendMode.darken,
+                        ),
+                      ),
+                      border: Border.all(
+                        color: const Color(0xFF707270),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: isUploading
+                          ? const SizedBox(
+                              height: 26,
+                              width: 26,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          if (picked != null) ...[
+            // SizedBox(
+            //   width: 160,
+            //   height: 42,
+            //   child: ElevatedButton(
+            //     onPressed: isUploading
+            //         ? null
+            //         : () async {
+            //             final ok = await c.editProfile();
+            //             if (!ok) {
+            //               Get.snackbar("Error", "Profile image upload failed");
+            //             }
+            //           },
+            //     child: Text(isUploading ? "Uploading..." : "Upload Photo"),
+            //   ),
+            // ),
+            // const SizedBox(height: 8),
+            TextButton(
+              onPressed: isUploading ? null : c.clearProfileImage,
+              child: const Text("Remove"),
+            ),
+          ],
+        ],
+      );
+    });
   }
 
   Widget _headingText({required String text}) {
@@ -179,7 +253,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(Images.appLogo, width: 52, height: 42),
+          InkWell(
+            onTap: () {
+              Get.back();
+            },
+            child: const Icon(Icons.arrow_back_ios, color: Color(0xFF707270)),
+          ),
 
           Text(
             "Profile Update",

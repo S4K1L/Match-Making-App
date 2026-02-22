@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/model/global_story_model.dart';
+import 'package:flutter_extension/model/multi_body.dart';
 import 'package:flutter_extension/model/mutual_story_list_model.dart';
 import 'package:flutter_extension/model/story_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -29,45 +31,38 @@ class HomeController extends GetxController {
   Timer? timer;
   bool isAnimatingOut = false;
 
-  List<dynamic> get allStories {
-    final list = <dynamic>[];
-
-    if (myStory.value != null) {
-      list.add(myStory.value);
-    }
-
-    list.addAll(mutualStories);
-    list.addAll(globalStories);
-
-    return list;
-  }
-
   @override
   void onInit() {
     super.onInit();
-    fetchAllStories();
+    fetchData();
   }
 
-  Future<void> fetchAllStories() async {
+  Future<void> fetchData() async {
     isLoading.value = true;
 
     try {
-      await Future.wait([fetchGlobalStories(), fetchMutualStories()]);
+      await Future.wait([
+        fetchGlobalStories(),
+        fetchMutualStories(),
+        fetchMyStories(),
+      ]);
 
-      if (allStories.isNotEmpty) {
-        currentIndex.value = 0;
-        currentImageIndex.value = 0;
-
-        _preloadCurrent();
-        _preloadNext();
-
-        startProgress();
+      if (globalStories.isNotEmpty) {
+        _resetStoryState();
       }
-    } catch (e) {
-      debugPrint("Fetch Error: $e");
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _resetStoryState() {
+    currentIndex.value = 0;
+    currentImageIndex.value = 0;
+
+    _preloadCurrent();
+    _preloadNext();
+
+    startProgress();
   }
 
   Future<void> fetchGlobalStories() async {
@@ -79,15 +74,10 @@ class HomeController extends GetxController {
     final body = jsonDecode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final list = (body['data']['results'] as List)
-          .where((e) {
-            final popImages = e['pop_images'];
-            return popImages is List && popImages.isNotEmpty;
-          })
+      globalStories.value = (body['data']['results'] as List)
+          .where((e) => e['pop_images'] is List && e['pop_images'].isNotEmpty)
           .map((e) => GlobalStoryModel.fromJson(e))
           .toList();
-
-      globalStories.value = list;
     }
   }
 
@@ -100,11 +90,49 @@ class HomeController extends GetxController {
     final body = jsonDecode(response.body);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final list = (body['data'] as List)
+      final List dataList = body['data'] ?? [];
+
+      mutualStories.value = dataList
           .map((e) => MutualStoryModel.fromJson(e))
           .toList();
+    } else {
+      mutualStories.clear();
+    }
+  }
 
-      mutualStories.value = list;
+  Future<void> fetchMyStories() async {
+    final response = await _apiService.get(
+      ApiConstant.mutualSystemMyStory,
+      authReq: true,
+    );
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final List dataList = body['data'] ?? [];
+
+      if (dataList.isEmpty) {
+        myStory.value = null;
+        return;
+      }
+
+      final list = dataList.map((e) => MutualStoryModel.fromJson(e)).toList();
+
+      final mediaPaths = list
+          .where((e) => e.media != null && e.media!.isNotEmpty)
+          .map((e) => "${ApiConstant.BASE_URL_IMAGE}${e.media}")
+          .toList();
+
+      myStory.value = Story(
+        id: list.first.id,
+        userName: list.first.user ?? "You",
+        mediaPaths: mediaPaths,
+        isMe: true,
+        createdAt: list.first.createdAt,
+        expiresAt: list.first.expiresAt,
+      );
+    } else {
+      myStory.value = null;
     }
   }
 
@@ -112,76 +140,74 @@ class HomeController extends GetxController {
     final files = await _picker.pickMultiImage(imageQuality: 85);
     if (files.isEmpty) return;
 
-    createStory();
+    await createStory(files);
 
-    currentIndex.value = 0;
-    currentImageIndex.value = 0;
-
-    _preloadCurrent();
-    _preloadNext();
-
-    startProgress();
+    _resetStoryState();
   }
 
-  void createStory() async {
+  Future<void> createStory(List<XFile> files) async {
     isLoading.value = true;
+
     try {
-      final response = await _apiService.post(
+      final multipartList = files
+          .map((file) => MultipartBody(key: "media", file: File(file.path)))
+          .toList();
+
+      final response = await _apiService.postMultipartData(
         ApiConstant.mutualSystemCreateStory,
-        {"media": myStory.value?.mediaPaths},
+        {},
+        multipartBody: multipartList,
         authReq: true,
       );
+
+      final body = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        isLoading.value = false;
-        fetchMutualStories();
+        myStory.value = Story(
+          id: body['data']['id'],
+          userName: "You",
+          mediaPaths: files.map((e) => e.path).toList(),
+          isMe: true,
+        );
+
+        await fetchMyStories();
+        await fetchMutualStories();
+
+        Get.back();
+      } else {
+        showCustomSnackBar("Try again later", isError: true);
       }
-    } catch (e) {
-      debugPrint("Error: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
   List<String> getCurrentImages() {
-    final item = allStories[currentIndex.value];
-
-    if (item is Story) {
-      return item.mediaPaths;
+    if (globalStories.isEmpty || currentIndex.value >= globalStories.length) {
+      return [];
     }
 
-    if (item is GlobalStoryModel) {
-      return item.popImages?.map((e) => e.imageUrl ?? "").toList() ?? [];
-    }
-
-    if (item is MutualStoryModel) {
-      if (item.media != null) {
-        return ["http://10.10.12.111:8000${item.media}"];
-      }
-    }
-
-    return [];
+    return globalStories[currentIndex.value].popImages
+            ?.map((e) => e.imageUrl ?? "")
+            .toList() ??
+        [];
   }
 
   void startProgress() {
     timer?.cancel();
     progressValue.value = 0;
 
-    timer = Timer.periodic(const Duration(milliseconds: 50), (t) {
+    timer = Timer.periodic(const Duration(milliseconds: 50), (_) {
       progressValue.value += 0.01;
 
-      if (progressValue.value >= 1) {
-        nextImage();
-      }
+      if (progressValue.value >= 1) nextImage();
     });
   }
 
   void nextImage() {
     final images = getCurrentImages();
 
-    if (images.isEmpty) {
-      nextStory();
-      return;
-    }
+    if (images.isEmpty) return nextStory();
 
     if (currentImageIndex.value < images.length - 1) {
       currentImageIndex.value++;
@@ -190,7 +216,6 @@ class HomeController extends GetxController {
       nextStory();
     }
 
-    progressValue.value = 0;
     startProgress();
   }
 
@@ -202,51 +227,39 @@ class HomeController extends GetxController {
       previousStory();
     }
 
-    progressValue.value = 0;
     startProgress();
   }
 
   void nextStory() {
-    if (allStories.isEmpty) return;
+    if (globalStories.isEmpty) return;
 
-    currentIndex.value = (currentIndex.value + 1) % allStories.length;
+    currentIndex.value = (currentIndex.value + 1) % globalStories.length;
+
     currentImageIndex.value = 0;
 
     _preloadCurrent();
     _preloadNext();
-
     startProgress();
   }
 
   void previousStory() {
-    if (allStories.isEmpty) return;
+    if (globalStories.isEmpty) return;
 
     currentIndex.value =
-        (currentIndex.value - 1 + allStories.length) % allStories.length;
+        (currentIndex.value - 1 + globalStories.length) % globalStories.length;
 
     currentImageIndex.value = 0;
 
     _preloadCurrent();
     _preloadNext();
-
     startProgress();
-  }
-
-  void onTap(TapUpDetails details, double width) {
-    if (details.localPosition.dx < width / 2) {
-      previousImage();
-    } else {
-      nextImage();
-    }
   }
 
   void handleGesture(double dx) {
     if (isAnimatingOut) return;
 
     dragDx.value += dx;
-
-    if (dragDx.value > 300) dragDx.value = 300;
-    if (dragDx.value < -300) dragDx.value = -300;
+    dragDx.value = dragDx.value.clamp(-300, 300);
   }
 
   void onSwipeEnd() {
@@ -262,22 +275,10 @@ class HomeController extends GetxController {
   void _animateBack() {
     isAnimatingOut = true;
 
-    const duration = 200;
-    const frameRate = 16;
-    int steps = duration ~/ frameRate;
-    double start = dragDx.value;
+    Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      dragDx.value *= 0.7;
 
-    int currentStep = 0;
-
-    Timer.periodic(const Duration(milliseconds: frameRate), (timer) {
-      currentStep++;
-
-      double t = currentStep / steps;
-      double eased = 1 - (1 - t) * (1 - t); // easeOut
-
-      dragDx.value = start * (1 - eased);
-
-      if (currentStep >= steps) {
+      if (dragDx.value.abs() < 1) {
         dragDx.value = 0;
         isAnimatingOut = false;
         timer.cancel();
@@ -288,31 +289,13 @@ class HomeController extends GetxController {
   void _animateOut(bool toLeft) {
     isAnimatingOut = true;
 
-    const duration = 250;
-    const frameRate = 16;
+    Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      dragDx.value += toLeft ? -40 : 40;
 
-    int steps = duration ~/ frameRate;
-    double start = dragDx.value;
-    double end = toLeft ? -400 : 400;
-
-    int currentStep = 0;
-
-    Timer.periodic(const Duration(milliseconds: frameRate), (timer) {
-      currentStep++;
-
-      double t = currentStep / steps;
-      double eased = Curves.easeOut.transform(t);
-
-      dragDx.value = start + (end - start) * eased;
-
-      if (currentStep >= steps) {
+      if (dragDx.value.abs() > 400) {
         timer.cancel();
 
-        if (toLeft) {
-          nextStory();
-        } else {
-          previousStory();
-        }
+        toLeft ? nextStory() : previousStory();
 
         dragDx.value = 0;
         isAnimatingOut = false;
@@ -321,61 +304,39 @@ class HomeController extends GetxController {
   }
 
   void _preloadCurrent() {
-    if (allStories.isEmpty) return;
+    if (globalStories.isEmpty) return;
+
     _preloadImage(currentIndex.value);
     _preloadCurrentImage();
   }
 
   void _preloadNext() {
-    if (allStories.length < 2) return;
+    if (globalStories.length < 2) return;
 
-    final nextIndex = (currentIndex.value + 1) % allStories.length;
+    final nextIndex = (currentIndex.value + 1) % globalStories.length;
+
     _preloadImage(nextIndex);
   }
 
   void _preloadCurrentImage() {
     final images = getCurrentImages();
-    if (images.isEmpty) return;
-
     final idx = currentImageIndex.value;
+
     if (idx < 0 || idx >= images.length) return;
 
-    final item = allStories[currentIndex.value];
-
-    if (item is Story) {
-      precacheImage(FileImage(File(images[idx])), Get.context!);
-    } else {
-      final url = images[idx];
-      if (url.isNotEmpty) {
-        precacheImage(NetworkImage(url), Get.context!);
-      }
+    final url = images[idx];
+    if (url.isNotEmpty) {
+      precacheImage(NetworkImage(url), Get.context!);
     }
   }
 
   void _preloadImage(int index) {
-    final item = allStories[index];
+    if (index < 0 || index >= globalStories.length) return;
 
-    if (item is Story) {
-      if (item.mediaPaths.isNotEmpty) {
-        precacheImage(FileImage(File(item.mediaPaths.first)), Get.context!);
-      }
-    }
+    final url = globalStories[index].popImages?.first.imageUrl;
 
-    if (item is GlobalStoryModel) {
-      final url = item.popImages?.first.imageUrl;
-      if (url != null) {
-        precacheImage(NetworkImage(url), Get.context!);
-      }
-    }
-
-    if (item is MutualStoryModel) {
-      final url = item.media != null
-          ? "http://10.10.12.111:8000${item.media}"
-          : null;
-
-      if (url != null) {
-        precacheImage(NetworkImage(url), Get.context!);
-      }
+    if (url != null && url.isNotEmpty) {
+      precacheImage(NetworkImage(url), Get.context!);
     }
   }
 

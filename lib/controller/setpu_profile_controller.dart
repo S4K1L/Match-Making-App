@@ -28,6 +28,8 @@ class SetpuProfileController extends GetxController {
   final ImagePicker picker = ImagePicker();
 
   RxList<XFile?> images = List<XFile?>.filled(6, null, growable: false).obs;
+  final Rxn<XFile> profileImage = Rxn<XFile>();
+  final RxBool profilePhotoUploading = false.obs;
 
   // Q1
   final fullNameController = TextEditingController();
@@ -43,6 +45,13 @@ class SetpuProfileController extends GetxController {
 
   final RxBool profileUpdating = false.obs;
   final RxBool photosUploading = false.obs;
+
+  Future<void> profileImagePicker() async {
+    final XFile? picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      profileImage.value = picked;
+    }
+  }
 
   Future<void> pickImage(int index) async {
     final XFile? pickedImage = await picker.pickImage(
@@ -335,6 +344,51 @@ class SetpuProfileController extends GetxController {
     } finally {
       photosUploading.value = false;
     }
+  }
+
+  Future<bool> editProfile() async {
+    profileUpdating.value = true;
+
+    try {
+      final model = buildProfileUpdateModel();
+
+      MultipartBody? imagePart;
+
+      if (profileImage.value != null && profileImage.value!.path.isNotEmpty) {
+        final file = File(profileImage.value!.path);
+
+        if (file.existsSync()) {
+          imagePart = MultipartBody(
+            key: "profile_pic", // 🔥 confirm this with backend
+            file: file,
+          );
+        }
+      }
+
+      final result = await _apiService.patchMultipartData(
+        ApiConstant.updateProfile,
+        model.toJson(),
+        multipartBody: imagePart != null ? [imagePart] : [],
+        authReq: true,
+      );
+
+      if (result.statusCode == 200 || result.statusCode == 201) {
+        await Get.find<UserController>().getInfo();
+        return true;
+      }
+
+      debugPrint('Failed: ${result.statusCode} ${result.body}');
+      return false;
+    } catch (e) {
+      debugPrint('Error: $e');
+      return false;
+    } finally {
+      profileUpdating.value = false;
+    }
+  }
+
+  void clearProfileImage() {
+    profileImage.value = null;
   }
 
   @override

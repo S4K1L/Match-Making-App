@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class ApiConstant {
   static const String BASE_URL = 'http://10.10.12.111:8000/v1/';
   static const String BASE_URL_IMAGE = 'http://10.10.12.111:8000';

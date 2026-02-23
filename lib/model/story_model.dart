@@ -1,6 +1,6 @@
 import 'package:flutter_extension/util/api_constant.dart';
 
-class Story {
+class StoryModel {
   final String id;
   final String? userName;
   final List<String> mediaPaths;
@@ -13,7 +13,7 @@ class Story {
   final DateTime? createdAt;
   final DateTime? expiresAt;
 
-  Story({
+  StoryModel({
     required this.id,
     this.userName,
     required this.mediaPaths,
@@ -25,8 +25,8 @@ class Story {
     this.expiresAt,
   });
 
-  factory Story.fromJson(Map<String, dynamic> json) {
-    return Story(
+  factory StoryModel.fromJson(Map<String, dynamic> json) {
+    return StoryModel(
       id: json['id'] ?? '',
       userName: json['user'],
       mediaPaths: json['media'] != null
@@ -45,8 +45,8 @@ class Story {
     );
   }
 
-  factory Story.local({required List<String> paths, String? userName}) {
-    return Story(
+  factory StoryModel.local({required List<String> paths, String? userName}) {
+    return StoryModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       userName: userName ?? "You",
       mediaPaths: paths,

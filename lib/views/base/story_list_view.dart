@@ -24,7 +24,7 @@ class StoryListView extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: stories.length + 1,
-          separatorBuilder: (_, __) => const SizedBox(width: 12),
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
             if (index == 0) {
               return _buildAddStoryItem(controller);
@@ -58,13 +58,13 @@ class StoryListView extends StatelessWidget {
     return _StoryItem(
       title: "Add Story",
       borderColor: const Color(0xFFF6C53E),
-      child: const Icon(Icons.add, size: 30),
       onTap: controller.pickImage,
+      child: const Icon(Icons.add, size: 30),
     );
   }
 
   _StoryUIData _mapToUI(dynamic item) {
-    if (item is Story) {
+    if (item is StoryModel) {
       return _StoryUIData(
         title: "Your Story",
         type: StoryType.mine,
@@ -130,7 +130,7 @@ class StoryListView extends StatelessWidget {
 
       case StoryType.mutual:
       case StoryType.global:
-        await Get.to(() => const OthersStoryViewer());
+        await Get.to(() => OthersStoryViewer(storyId: item.id.toString()));
         break;
 
       case StoryType.add:
@@ -139,7 +139,6 @@ class StoryListView extends StatelessWidget {
   }
 }
 
-/// 🔥 Internal helper (UI only)
 class _StoryUIData {
   final String title;
   final StoryType type;

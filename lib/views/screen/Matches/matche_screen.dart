@@ -232,7 +232,7 @@ class _MatcheScreenState extends State<MatcheScreen> {
     );
   }
 
-  _showFilterBottomSheet(BuildContext context) {
+  void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
 
@@ -475,7 +475,7 @@ class _MatcheScreenState extends State<MatcheScreen> {
   }
 
   // Function for gender option widget
-  _genderOption(String gender) {
+  InkWell _genderOption(String gender) {
     return InkWell(
       onTap: () {
         _matchesController.selectedGender.value = gender;

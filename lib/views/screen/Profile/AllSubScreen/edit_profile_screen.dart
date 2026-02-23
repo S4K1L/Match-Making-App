@@ -177,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         image: imageProvider,
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.15),
+                          Colors.black.withValues(alpha: .15),
                           BlendMode.darken,
                         ),
                       ),

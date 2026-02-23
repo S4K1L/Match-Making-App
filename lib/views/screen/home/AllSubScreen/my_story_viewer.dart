@@ -1,10 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/my_story_controller.dart';
+import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/model/my_story_model.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MyStoryViewer extends StatefulWidget {
   final String thumb;
@@ -16,282 +17,332 @@ class MyStoryViewer extends StatefulWidget {
 }
 
 class _MyStoryViewerState extends State<MyStoryViewer> {
-  final _myStoryController = Get.put(MyStoryController());
+  final c = Get.put(MyStoryController());
+  final _userController = Get.find<UserController>();
 
   @override
   void initState() {
     super.initState();
-    _myStoryController.startProgress();
+    c.getStories();
   }
 
   @override
   void dispose() {
-    _myStoryController.stopProgress();
+    c.stopProgress();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double ph = MediaQuery.of(context).size.height * 0.88;
-
-    /// visible when closed
-    final double inset = MediaQuery.of(
-      context,
-    ).padding.bottom; // safe area bottom
-    final double closedBottom = -ph - inset;
-
     return Scaffold(
       body: Stack(
         children: [
           SizedBox.expand(
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
-
-          Obx(() {
-            final path = _myStoryController
-                .myStories[_myStoryController.currentIndex.value];
-            final isAsset = path.startsWith("assets/");
-
-            return Stack(
-              children: [
-                // -------- CONTENT (white background) --------
-                SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 8),
-
-                        // ===== ROUNDED STORY CARD =====
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 14,
-                                  offset: Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              children: [
-                                // image
-                                Positioned.fill(
-                                  child: isAsset
-                                      ? Image.asset(path, fit: BoxFit.cover)
-                                      : Image.file(
-                                          File(path),
-                                          fit: BoxFit.cover,
-                                        ),
-                                ),
-
-                                // gradient overlay
-                                Positioned.fill(
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        stops: const [0.0, 0.22, 0.78, 1.0],
-                                        colors: [
-                                          Colors.black.withValues(alpha: 0.55),
-                                          Colors.transparent,
-                                          Colors.transparent,
-                                          Colors.black.withValues(alpha: 0.65),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                // tap zones (prev/next)
-                                Positioned.fill(
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          behavior: HitTestBehavior.translucent,
-                                          onTap: _myStoryController.prevStory,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          behavior: HitTestBehavior.translucent,
-                                          onTap: _myStoryController.nextStory,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // top segmented progress
-                                const Positioned(
-                                  top: 8,
-                                  left: 10,
-                                  right: 10,
-                                  child: _StoryProgressBar(),
-                                ),
-
-                                // top bar (avatar + name + time + close)
-                                Positioned(
-                                  top: 12,
-                                  left: 12,
-                                  right: 8,
-                                  child: Row(
-                                    children: [
-                                      const CircleAvatar(
-                                        radius: 16,
-                                        backgroundImage: AssetImage(
-                                          "assets/images/olivia.png",
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            _myStoryController.userName.value,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          Text(
-                                            _myStoryController.timeAgo.value,
-                                            style: const TextStyle(
-                                              color: Color(0xFFA7A7A7),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
-                                        padding: const EdgeInsets.all(8),
-                                        constraints: const BoxConstraints(),
-                                        onPressed: () => Get.back(),
-                                        icon: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        // ===== BOTTOM ROW (avatars left, add story right) =====
-                        Row(
-                          children: [
-                            // clickable avatars (bigger hit box + ripple)
-                            InkWell(
-                              onTap: _myStoryController.openViewers,
-                              borderRadius: BorderRadius.circular(16),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 6,
-                                ),
-                                child: _OverlappingViewers(
-                                  avatars: [
-                                    "assets/images/olivia.png",
-                                    "assets/images/davesi.png",
-                                    "assets/images/amiliva.png",
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-
-                            InkWell(
-                              onTap: () {
-                                _myStoryController.pickAddStoryImage(
-                                  fromCamera: false,
-                                );
-                              },
-                              child: Column(
-                                children: [
-                                  SvgPicture.asset('assets/icons/story.svg'),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    "Add story",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF707270),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // ===== SCRIM (tap to close) =====
-                Obx(
-                  () => _myStoryController.showViewers.value
-                      ? Positioned.fill(
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _myStoryController.closeViewers,
-                            child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 180),
-                              opacity: 0.22,
-                              child: Container(color: Colors.black),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-
-                // ===== VIEWERS PANEL (AnimatedPositioned + SafeArea inside) =====
-                Obx(
-                  () => AnimatedPositioned(
-                    duration: const Duration(milliseconds: 280),
-                    curve: Curves.easeOutCubic,
-                    left: 0,
-                    right: 0,
-                    bottom: _myStoryController.showViewers.value
-                        ? 0
-                        : closedBottom,
-                    height: ph,
-                    child: IgnorePointer(
-                      ignoring: !_myStoryController.showViewers.value,
-                      child: SafeArea(
-                        top: false,
-                        left: false,
-                        right: false,
-                        bottom: true,
-                        child: _ViewersPanel(
-                          close: _myStoryController.closeViewers,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
+          Obx(() => _body(context)),
         ],
+      ),
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    if (c.isLoading.value) return const _StoryShimmer();
+
+    if (c.myStories.isEmpty) {
+      return const Center(child: Text("No stories available"));
+    }
+
+    final story = c.currentStory!;
+    return _content(context, story);
+  }
+
+  Widget _content(BuildContext context, MyStoryModel story) {
+    final ph = MediaQuery.of(context).size.height * 0.88;
+    final inset = MediaQuery.of(context).padding.bottom;
+    final closedBottom = -ph - inset;
+
+    return Stack(
+      children: [
+        SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
+                _storyCard(context, story),
+                const SizedBox(height: 10),
+                _bottomActions(),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+        Obx(
+          () => c.showViewers.value
+              ? Positioned.fill(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: c.closeViewers,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      opacity: 0.22,
+                      child: Container(color: Colors.black),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        Obx(
+          () => AnimatedPositioned(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            left: 0,
+            right: 0,
+            bottom: c.showViewers.value ? 0 : closedBottom,
+            height: ph,
+            child: IgnorePointer(
+              ignoring: !c.showViewers.value,
+              child: SafeArea(
+                top: false,
+                left: false,
+                right: false,
+                bottom: true,
+                child: _ViewersPanel(close: c.closeViewers),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _storyCard(BuildContext context, MyStoryModel story) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 14,
+              offset: Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned.fill(child: _media(story)),
+            Positioned.fill(child: _gradient()),
+            Positioned.fill(child: _tapNavigation()),
+            const Positioned(
+              top: 8,
+              left: 10,
+              right: 10,
+              child: _StoryProgressBar(),
+            ),
+            _topBar(story),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _media(MyStoryModel story) {
+    if (story.media != null) {
+      return Image.network(
+        story.media!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) =>
+            const Center(child: Icon(Icons.broken_image)),
+      );
+    }
+
+    return Container(
+      color: Colors.black,
+      alignment: Alignment.center,
+      child: Text(
+        story.text ?? '',
+        style: const TextStyle(color: Colors.white, fontSize: 18),
+      ),
+    );
+  }
+
+  Widget _gradient() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0.0, 0.22, 0.78, 1.0],
+          colors: [
+            Colors.black.withValues(alpha: 0.55),
+            Colors.transparent,
+            Colors.transparent,
+            Colors.black.withValues(alpha: 0.65),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tapNavigation() {
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: c.prevStory,
+          ),
+        ),
+        Expanded(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: c.nextStory,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _topBar(MyStoryModel story) {
+    return Positioned(
+      top: 12,
+      left: 12,
+      right: 8,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundImage: NetworkImage(
+              _userController.userInfo.value!.profilePic,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                story.userFullName,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              Text(
+                _formatTime(story.createdAt),
+                style: const TextStyle(color: Color(0xFFA7A7A7), fontSize: 12),
+              ),
+            ],
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.close, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomActions() {
+    return Row(
+      children: [
+        InkWell(
+          onTap: c.openViewers,
+          child: const _OverlappingViewers(
+            avatars: [
+              "assets/images/olivia.png",
+              "assets/images/davesi.png",
+              "assets/images/amiliva.png",
+            ],
+          ),
+        ),
+        const Spacer(),
+        InkWell(
+          onTap: () => c.pickAddStoryImage(),
+          child: Column(
+            children: [
+              SvgPicture.asset('assets/icons/story.svg'),
+              const SizedBox(height: 8),
+              const Text("Add story"),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
+    if (diff.inHours < 24) return "${diff.inHours}h ago";
+    return "${diff.inDays}d ago";
+  }
+}
+
+class _StoryShimmer extends StatelessWidget {
+  const _StoryShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height * 0.80;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 8),
+              _shimmerBox(height),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _shimmerChip(100),
+                  const Spacer(),
+                  Column(
+                    children: [
+                      _shimmerBox(24, width: 24),
+                      const SizedBox(height: 6),
+                      _shimmerBox(10, width: 60),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerBox(double height, {double? width}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerChip(double width) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        height: 28,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }
@@ -425,20 +476,22 @@ class _ViewersPanel extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: c.myStories.length + 1,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        separatorBuilder: (_, _) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
                           if (index < c.myStories.length) {
                             final p = c.myStories[index];
-                            final isAsset = p.startsWith("assets/");
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(14),
                               child: Container(
                                 width: 92,
                                 height: 104,
                                 color: const Color(0xFFEFF1F4),
-                                child: isAsset
-                                    ? Image.asset(p, fit: BoxFit.cover)
-                                    : Image.file(File(p), fit: BoxFit.cover),
+                                child: p.media != null
+                                    ? Image.network(p.media!, fit: BoxFit.cover)
+                                    : Image.asset(
+                                        Images.greeyBackground,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             );
                           } else {
@@ -476,7 +529,7 @@ class _ViewersPanel extends StatelessWidget {
                       () => ListView.separated(
                         padding: const EdgeInsets.only(top: 4, bottom: 18),
                         itemCount: c.viewers.length,
-                        separatorBuilder: (_, __) => const SizedBox(),
+                        separatorBuilder: (_, _) => const SizedBox(),
                         itemBuilder: (context, i) {
                           final v = c.viewers[i];
                           return ListTile(

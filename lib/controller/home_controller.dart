@@ -18,7 +18,7 @@ class HomeController extends GetxController {
 
   RxList<GlobalStoryModel> globalStories = <GlobalStoryModel>[].obs;
   RxList<MutualStoryModel> mutualStories = <MutualStoryModel>[].obs;
-  Rxn<Story> myStory = Rxn<Story>();
+  Rxn<StoryModel> myStory = Rxn<StoryModel>();
 
   RxBool isLoading = false.obs;
 
@@ -123,7 +123,7 @@ class HomeController extends GetxController {
           .map((e) => "${ApiConstant.BASE_URL_IMAGE}${e.media}")
           .toList();
 
-      myStory.value = Story(
+      myStory.value = StoryModel(
         id: list.first.id,
         userName: list.first.user ?? "You",
         mediaPaths: mediaPaths,
@@ -163,7 +163,7 @@ class HomeController extends GetxController {
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        myStory.value = Story(
+        myStory.value = StoryModel(
           id: body['data']['id'],
           userName: "You",
           mediaPaths: files.map((e) => e.path).toList(),

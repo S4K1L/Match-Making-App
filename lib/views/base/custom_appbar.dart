@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-customAppBar() {
+Padding customAppBar() {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 15),
     child: Row(

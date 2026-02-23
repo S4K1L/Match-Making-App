@@ -50,7 +50,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         itemCount: controller.notifications.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
                         itemBuilder: (_, index) {
                           final item = controller.notifications[index];
                           return _NotificationItem(item: item);

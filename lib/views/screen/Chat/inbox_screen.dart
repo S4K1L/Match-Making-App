@@ -151,7 +151,7 @@ class _InboxScreenState extends State<InboxScreen> {
                         ),
                       );
                     },
-                    separatorBuilder: (__, index) => const SizedBox(height: 18),
+                    separatorBuilder: (_, index) => const SizedBox(height: 18),
                     itemCount: 10,
                   ),
                 ),

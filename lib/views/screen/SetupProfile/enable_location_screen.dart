@@ -5,7 +5,6 @@ import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/screen/SetupProfile/privacy_policy_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 
 class EnableLocationScreen extends StatefulWidget {
   const EnableLocationScreen({super.key});

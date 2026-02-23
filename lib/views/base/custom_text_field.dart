@@ -135,7 +135,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 
-  _suffixIcon(IconData icon) {
+  Padding _suffixIcon(IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       child: Icon(icon, color: const Color(0xFF707270)),

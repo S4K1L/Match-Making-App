@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_extension/controller/profile_controller.dart';
 import 'package:flutter_extension/controller/setpu_profile_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
@@ -302,7 +301,7 @@ class SelectablePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ProfileController());
+    final controller = Get.find<SetpuProfileController>();
 
     return Obx(() {
       final selected = controller.isSelectedField(title);

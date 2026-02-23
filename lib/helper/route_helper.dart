@@ -1,6 +1,6 @@
 import 'package:flutter_extension/views/screen/Auth/login_screen.dart';
 import 'package:flutter_extension/views/screen/Auth/signup_screen.dart';
-import 'package:flutter_extension/views/screen/Chat/inbox_screen.dart';
+import 'package:flutter_extension/views/screen/Chat/chat_list.dart';
 import 'package:flutter_extension/views/screen/Matches/matche_screen.dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/menu_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/profile_screen.dart';
@@ -28,9 +28,8 @@ class AppRoutes {
     GetPage(name: loingScreen, page: () => const LoginScreen()),
     GetPage(name: homeScreen, page: () => const HomeScreen()),
     GetPage(name: mathchesScreen, page: () => const MatcheScreen()),
-    GetPage(name: inboxScreen, page: () => const InboxScreen()),
-    GetPage(name: profileScreen, page: ()=> const ProfileScreen()),
-    GetPage(name: menuScreen, page: ()=> const MenuScreen()),
+    GetPage(name: inboxScreen, page: () => const ChatListScreen()),
+    GetPage(name: profileScreen, page: () => const ProfileScreen()),
+    GetPage(name: menuScreen, page: () => const MenuScreen()),
   ];
-
 }

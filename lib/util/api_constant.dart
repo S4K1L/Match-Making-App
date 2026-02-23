@@ -41,4 +41,9 @@ class ApiConstant {
   static const filterUsers = 'account/users/filter/';
 
   static const notification = 'mutual-system/notifications/';
+
+  static const privacyPolicy = 'privacy/privacy-policy/';
+  static const termsAndConditions = 'privacy/terms-conditions/';
+
+  static const threadList = 'chat/threads/';
 }

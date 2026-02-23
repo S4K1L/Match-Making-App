@@ -1,5 +1,4 @@
 // ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
@@ -8,9 +7,11 @@ import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_switch.dart';
+import 'package:flutter_extension/views/base/pop_up_sheet.dart';
 import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/edit_profile_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/change_password_screen.dart';
+import 'package:flutter_extension/views/screen/Profile/AllSubScreen/privacy_policy_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/subscription_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -100,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             _customListTile(
                               onTap: () {
-                                Get.to(() => const ChangePasswordScreen());
+                                Get.to(() => const PrivacyPolicyScreen());
                               },
                               image: "assets/icons/privacy.svg",
                               title: "Privacy Policy",
@@ -114,7 +115,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             _customListTile(
                               onTap: () {
-                                Get.to(() => const ChangePasswordScreen());
+                                showCustomBottomSheet(
+                                  context,
+                                  "Delete",
+                                  "Are you sure you want to delete your account?",
+                                  () {},
+                                );
                               },
                               image: "assets/icons/password.svg",
                               title: "Delete Account",

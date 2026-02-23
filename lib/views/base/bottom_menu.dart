@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/home_controller.dart';
-import 'package:flutter_extension/views/screen/Chat/inbox_screen.dart';
+import 'package:flutter_extension/views/screen/Chat/chat_list.dart';
 import 'package:flutter_extension/views/screen/Matches/matche_screen.dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/menu_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/profile_screen.dart';
@@ -36,7 +36,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
         children: [
           const HomeScreen(),
           const MatcheScreen(),
-          const InboxScreen(),
+          const ChatListScreen(),
           const ProfileScreen(),
           const MenuScreen(),
         ],

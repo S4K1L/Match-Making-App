@@ -5,7 +5,6 @@ import 'package:flutter_extension/controller/connection_controller.dart';
 import 'package:flutter_extension/model/global_story_model.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/pop_up_sheet.dart';
-import 'package:flutter_extension/views/screen/Chat/chat_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -252,7 +251,9 @@ class _DetailsPageState extends State<DetailsPage> {
                         //TODO: Need to call the create chat api
                         Center(
                           child: InkWell(
-                            onTap: () => Get.to(() => const ChatScreen()),
+                            onTap: () {
+                              // Get.to(() => const InboxScreen())
+                            },
                             child: Container(
                               height: 45,
                               width: 140,

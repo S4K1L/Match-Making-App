@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/chat_controller.dart';
+import 'package:flutter_extension/services/shared_prefs_service.dart';
+import 'package:flutter_extension/services/websocket_service.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class InboxScreen extends StatefulWidget {
+  final int threadId;
+  const InboxScreen({super.key, required this.threadId});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<InboxScreen> createState() => _InboxScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _InboxScreenState extends State<InboxScreen> {
+  final ChatController _chatController = Get.find<ChatController>();
+  @override
+  void initState() {
+    super.initState();
+    webSocketConnection();
+  }
+
+  void webSocketConnection() async {
+    String? token = await SharedPrefsService.get('token');
+    String? thread = widget.threadId.toString();
+    await WebSocketService.connect(thread: thread, token: token!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,9 +277,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ],
     );
   }
-
-
-
 }
 
 class ChatBubble extends StatelessWidget {

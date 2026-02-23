@@ -52,7 +52,6 @@ class ReportAndIssueScreen extends StatelessWidget {
 
                   const SizedBox(height: 48),
 
-                  /// 🔥 Dynamic List
                   Obx(
                     () => Column(
                       children: List.generate(

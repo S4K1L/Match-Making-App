@@ -7,14 +7,14 @@ import 'package:flutter_extension/views/screen/SetupProfile/question1_screen.dar
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class PrivacyPolicyScreen extends StatefulWidget {
-  const PrivacyPolicyScreen({super.key});
+class ContinueJourneyScreen extends StatefulWidget {
+  const ContinueJourneyScreen({super.key});
 
   @override
-  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+  State<ContinueJourneyScreen> createState() => _ContinueJourneyScreenState();
 }
 
-class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+class _ContinueJourneyScreenState extends State<ContinueJourneyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,8 +109,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                             ],
                           ),
                         ),
-                     
-                     
                       ),
                     ],
                   ),

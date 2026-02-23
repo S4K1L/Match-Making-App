@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_appbar.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
-import 'package:flutter_extension/views/screen/SetupProfile/privacy_policy_screen.dart';
+import 'package:flutter_extension/views/screen/SetupProfile/continue_journey_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -65,7 +65,7 @@ class _EnableLocationScreenState extends State<EnableLocationScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: CustomButton(
                     onTap: () {
-                      Get.to(() => const PrivacyPolicyScreen());
+                      Get.to(() => const ContinueJourneyScreen());
                     },
                     text: "Allow Location",
                   ),

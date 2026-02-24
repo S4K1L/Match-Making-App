@@ -3,12 +3,14 @@ class ChatThreadModel {
   final OtherUser? otherUser;
   final DateTime? updatedAt;
   final LastMessage? lastMessage;
+  final int unreadCount;
 
   ChatThreadModel({
     required this.threadId,
     this.otherUser,
     this.updatedAt,
     this.lastMessage,
+    required this.unreadCount,
   });
 
   factory ChatThreadModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class ChatThreadModel {
       lastMessage: json['last_message'] != null
           ? LastMessage.fromJson(json['last_message'])
           : null,
+      unreadCount: json['unread_count'] ?? 0,
     );
   }
 
@@ -32,6 +35,7 @@ class ChatThreadModel {
       'other_user': otherUser?.toJson(),
       'updated_at': updatedAt?.toIso8601String(),
       'last_message': lastMessage?.toJson(),
+      'unread_count': unreadCount,
     };
   }
 }

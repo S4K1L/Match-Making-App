@@ -10,8 +10,9 @@ class ReportAndIssueScreen extends StatelessWidget {
   final String id;
   ReportAndIssueScreen({super.key, required this.id});
 
-  final ConnectionController _connectionController =
-      Get.find<ConnectionController>();
+  final ConnectionController _connectionController = Get.put(
+    ConnectionController(),
+  );
 
   @override
   Widget build(BuildContext context) {

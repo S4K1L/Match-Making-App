@@ -97,7 +97,7 @@ class BottomMenu extends StatelessWidget {
     final theme = Theme.of(context);
     List<BottomNavigationBarItem> menuItems = [
       getItem("assets/icons/home.svg", 'Home', theme, 0),
-      getItem("assets/icons/star.svg", 'Matches', theme, 1),
+      getItem("assets/icons/star.svg", 'Like You', theme, 1),
       getItem("assets/icons/chat.svg", 'Chats', theme, 2),
       getItem("assets/icons/profile.svg", 'Profile', theme, 3),
       getItem("assets/icons/menu.svg", 'Menu', theme, 4),

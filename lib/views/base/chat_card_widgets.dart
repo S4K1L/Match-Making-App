@@ -14,10 +14,11 @@ class ChatCardWidgets extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = chat.otherUser;
     final message = chat.lastMessage;
+    final unreadCount = chat.unreadCount;
 
     return InkWell(
       onTap: () {
-        Get.to(() => InboxScreen(threadId: chat.threadId));
+        Get.to(() => InboxScreen(chatModel: chat));
       },
       child: Row(
         children: [
@@ -76,28 +77,29 @@ class ChatCardWidgets extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              //TODO: add unread count
-              if (!(message?.isRead ?? true))
-                Container(
-                  height: 16,
-                  width: 16,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+              if (unreadCount > 0) ...[
+                if (!(message?.isRead ?? true))
+                  Container(
+                    height: 16,
+                    width: 16,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "1",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                    child: Center(
+                      child: Text(
+                        unreadCount.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                ),
+              ],
             ],
           ),
         ],
@@ -113,10 +115,42 @@ class ChatCardWidgets extends StatelessWidget {
   String _formatTime(DateTime? time) {
     if (time == null) return "";
 
-    final diff = DateTime.now().difference(time);
+    final now = DateTime.now();
 
-    if (diff.inMinutes < 60) return "${diff.inMinutes}m";
-    if (diff.inHours < 24) return "${diff.inHours}h";
-    return "${diff.inDays}d";
+    final isToday =
+        now.year == time.year && now.month == time.month && now.day == time.day;
+
+    final yesterday = now.subtract(const Duration(days: 1));
+
+    final isYesterday =
+        yesterday.year == time.year &&
+        yesterday.month == time.month &&
+        yesterday.day == time.day;
+
+    if (isToday) {
+      return _formatToAmPm(time);
+    }
+
+    if (isYesterday) {
+      return "Yesterday";
+    }
+
+    return _formatDate(time);
+  }
+
+  String _formatToAmPm(DateTime time) {
+    int hour = time.hour;
+    final minute = time.minute.toString().padLeft(2, '0');
+
+    final period = hour >= 12 ? 'PM' : 'AM';
+
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+
+    return "$hour:$minute $period";
+  }
+
+  String _formatDate(DateTime time) {
+    return "${time.day}/${time.month}/${time.year}";
   }
 }

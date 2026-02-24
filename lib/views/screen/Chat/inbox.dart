@@ -1,15 +1,23 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/chat_controller.dart';
-import 'package:flutter_extension/services/shared_prefs_service.dart';
-import 'package:flutter_extension/services/websocket_service.dart';
+import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/model/chat_model.dart';
+import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/chat_shimmer.dart';
+import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../base/chat_bubble.dart';
 
 class InboxScreen extends StatefulWidget {
-  final int threadId;
-  const InboxScreen({super.key, required this.threadId});
+  final ChatThreadModel chatModel;
+
+  const InboxScreen({super.key, required this.chatModel});
 
   @override
   State<InboxScreen> createState() => _InboxScreenState();
@@ -17,16 +25,79 @@ class InboxScreen extends StatefulWidget {
 
 class _InboxScreenState extends State<InboxScreen> {
   final ChatController _chatController = Get.find<ChatController>();
+
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
+
+  bool _showEmoji = false;
+  late int threadId;
+
   @override
   void initState() {
     super.initState();
-    webSocketConnection();
+
+    threadId = widget.chatModel.threadId;
+    _chatController.initChat(threadId);
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        setState(() => _showEmoji = false);
+      }
+    });
   }
 
-  void webSocketConnection() async {
-    String? token = await SharedPrefsService.get('token');
-    String? thread = widget.threadId.toString();
-    await WebSocketService.connect(thread: thread, token: token!);
+  @override
+  void dispose() {
+    _chatController.disposeChat();
+    _messageController.dispose();
+    _scrollController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    final text = _messageController.text.trim();
+
+    if (text.isEmpty) return;
+
+    _chatController.sendTextMessage(threadId, text);
+
+    _messageController.clear();
+
+    setState(() {});
+
+    _scrollToBottom();
+  }
+
+  void _toggleEmoji() {
+    setState(() => _showEmoji = !_showEmoji);
+
+    if (_showEmoji) {
+      _focusNode.unfocus();
+    } else {
+      FocusScope.of(context).requestFocus(_focusNode);
+    }
+  }
+
+  void _cameraSendImage() {
+    _chatController.sendImageMessage(threadId, source: ImageSource.gallery);
+  }
+
+  void _gallerySendImage() {
+    _chatController.sendImageMessage(threadId, source: ImageSource.camera);
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
@@ -34,132 +105,17 @@ class _InboxScreenState extends State<InboxScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox.expand(
-            child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
-          ),
-
+          _background(),
           _customAppbar(),
-
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 130),
+              padding: const EdgeInsets.only(top: 75),
               child: Column(
                 children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text(
-                      "Today",
-                      style: TextStyle(
-                        color: Color(0xFF707270),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(12),
-                      children: const [
-                        ChatBubble(
-                          isMe: false,
-                          text: "Hi. Sarthak! How are you doing?",
-                          showAvatar: true,
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "Hi Shreya, I'm doing well. Thanks for asking!",
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "What do you like to do for fun?",
-                        ),
-                        ChatBubble(
-                          isMe: false,
-                          text: "What do you like to do for fun?",
-                          showAvatar: true,
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "Hi Shreya, I'm doing well. Thanks for asking!",
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Bottom Input Field
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 42,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 6,
-                            ),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFF8FDFF),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/icons/emoji.svg'),
-                                const SizedBox(width: 8),
-                                const Expanded(
-                                  child: TextField(
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF666666),
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Message",
-                                      hintStyle: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF707270),
-                                      ),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                                SvgPicture.asset('assets/icons/camera.svg'),
-                                const SizedBox(width: 12),
-                                SvgPicture.asset('assets/icons/file.svg'),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          height: 44,
-                          width: 44,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF18433B), Color(0xFF0C312B)],
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset('assets/icons/send.svg'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // _dateChip(),
+                  Expanded(child: _messageList()),
+                  _inputField(),
+                  if (_showEmoji) _emojiPicker(),
                 ],
               ),
             ),
@@ -169,105 +125,211 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
+  // ================= UI PARTS =================
+
+  Widget _background() {
+    return SizedBox.expand(
+      child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
+    );
+  }
+
+  Widget _emojiPicker() {
+    return SizedBox(
+      height: 250,
+      child: EmojiPicker(
+        onEmojiSelected: (category, emoji) {
+          final controller = _messageController;
+
+          final text = controller.text;
+          final selection = controller.selection;
+
+          final newText = text.replaceRange(
+            selection.start >= 0 ? selection.start : text.length,
+            selection.end >= 0 ? selection.end : text.length,
+            emoji.emoji,
+          );
+
+          controller.value = TextEditingValue(
+            text: newText,
+            selection: TextSelection.collapsed(
+              offset:
+                  (selection.start >= 0 ? selection.start : text.length) +
+                  emoji.emoji.length,
+            ),
+          );
+
+          setState(() {}); // ✅ force rebuild (important)
+        },
+      ),
+    );
+  }
+
+  // Widget _dateChip() {
+  //   return Container(
+  //     margin: const EdgeInsets.symmetric(vertical: 8),
+  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: const Text(
+  //       "Today",
+  //       style: TextStyle(fontSize: 12, color: Color(0xFF707270)),
+  //     ),
+  //   );
+  // }
+
+  Widget _messageList() {
+    return Obx(() {
+      final messages = _chatController.messageList;
+      final myId = Get.find<UserController>().userInfo.value!.userId;
+
+      if (_chatController.isLoading.value && messages.isEmpty) {
+        return const ChatShimmer();
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
+      return ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(12),
+        itemCount: messages.length,
+        itemBuilder: (_, i) {
+          final msg = messages[i];
+          final isMe = msg.sender?.userId == myId;
+
+          return ChatBubble(
+            isMe: isMe,
+            text: msg.content ?? "",
+            attachment: msg.attachment,
+            localPath: msg.localPath,
+            isUploading: msg.isUploading,
+            showAvatar: !isMe,
+            userProfile: msg.sender?.profilePic ?? "",
+          );
+        },
+      );
+    });
+  }
+
+  Widget _inputField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(child: _inputBox()),
+          const SizedBox(width: 12),
+          _sendButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _inputBox() {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF8FDFF),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: _toggleEmoji,
+            child: SvgPicture.asset('assets/icons/emoji.svg'),
+          ),
+          const SizedBox(width: 8),
+
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              focusNode: _focusNode,
+              style: const TextStyle(fontSize: 14),
+              decoration: const InputDecoration(
+                hintText: "Message",
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+
+          GestureDetector(
+            onTap: _gallerySendImage,
+            child: SvgPicture.asset(
+              'assets/icons/camera.svg',
+              height: 28,
+              width: 28,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: _cameraSendImage,
+            child: SvgPicture.asset(
+              'assets/icons/file.svg',
+              height: 24,
+              width: 24,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sendButton() {
+    return GestureDetector(
+      onTap: _sendMessage,
+      child: Container(
+        height: 44,
+        width: 44,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: SvgPicture.asset('assets/icons/send.svg'),
+        ),
+      ),
+    );
+  }
+
+  // ================= APPBAR =================
+
   Widget _customAppbar() {
+    final user = widget.chatModel.otherUser;
+
     return Column(
       children: [
         Container(
-          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 35),
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
           ),
-          child: Column(
+          child: Row(
             children: [
-              const SizedBox(height: 30),
-              Row(
-                children: [
-                  InkWell(
+              InkWell(onTap: Get.back, child: const Icon(Icons.arrow_back_ios)),
+              _avatar(user),
+              const SizedBox(width: 12),
+              _userInfo(user),
+              const Spacer(),
+              //TODO: Add call by agora
+              GestureDetector(
+                child: SvgPicture.asset('assets/icons/mobile.svg'),
+              ),
+              PopupMenuButton(
+                itemBuilder: (_) => [
+                  PopupMenuItem(
                     onTap: () {
-                      Get.back();
+                      Get.to(
+                        () => ReportAndIssueScreen(id: user!.userId.toString()),
+                      );
                     },
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Color(0xFF707270),
-                    ),
-                  ),
-                  Container(
-                    height: 35,
-                    width: 35,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/amiliva.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Ethan Carter",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textColor,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            height: 10,
-                            width: 10,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF00CD07),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text(
-                            "Active",
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF707270),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-
-                  SvgPicture.asset('assets/icons/mobile.svg'),
-
-                  const SizedBox(width: 10),
-                  PopupMenuButton(
-                    color: const Color(0xFFFFFFFF),
-                    onSelected: (value) {},
-                    icon: Icon(Icons.more_vert, color: AppColors.textColor),
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        PopupMenuItem(
-                          onTap: () {},
-                          value: 'Report profile',
-                          child: const Text(
-                            'Report profile',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF222222),
-                            ),
-                          ),
-                        ),
-                      ];
-                    },
+                    value: 'report',
+                    child: const Text('Report profile'),
                   ),
                 ],
               ),
@@ -277,97 +339,35 @@ class _InboxScreenState extends State<InboxScreen> {
       ],
     );
   }
-}
 
-class ChatBubble extends StatelessWidget {
-  final bool isMe;
-  final String text;
-  final bool showAvatar;
-
-  const ChatBubble({
-    super.key,
-    required this.isMe,
-    required this.text,
-    this.showAvatar = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isMe) {
-      // Sender message (Right side, No avatar)
-      return Align(
-        alignment: Alignment.centerRight,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF18433B), Color(0xFF0C312B)],
-            ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-              bottomLeft: Radius.circular(12),
-            ),
-          ),
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+  Widget _avatar(user) {
+    return Container(
+      height: 35,
+      width: 35,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          image: user?.profilePic != null
+              ? NetworkImage(_fullImage(user!.profilePic!))
+              : const AssetImage('assets/images/olivia.png') as ImageProvider,
+          fit: BoxFit.cover,
         ),
-      );
-    } else {
-      // Receiver message (Left side, With avatar optionally)
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (showAvatar)
-            Container(
-              height: 30,
-              width: 30,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage('assets/images/olivia.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
-          else
-            const SizedBox(width: 32), // placeholder for alignment
+      ),
+    );
+  }
 
-          const SizedBox(width: 8),
-          Flexible(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Color(0xFF707270),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
+  Widget _userInfo(user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(user!.fullName, style: TextStyle(color: AppColors.textColor)),
+        const Text("Active", style: TextStyle(fontSize: 10)),
+      ],
+    );
+  }
+
+  String _fullImage(String path) {
+    if (path.startsWith("http")) return path;
+    return ApiConstant.BASE_URL_IMAGE + path;
   }
 }

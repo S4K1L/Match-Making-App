@@ -301,21 +301,17 @@ class SetpuProfileController extends GetxController {
         await Get.find<UserController>().getInfo();
         return true;
       } else {
-        // Handle errors with status code other than 200 or 201
         debugPrint('Failed to update profile: ${result.statusCode}');
         return false;
       }
     } catch (e) {
-      // Catch any exceptions and print them for debugging
       debugPrint('Error updating profile: $e');
       return false;
     } finally {
-      // Always set profileUpdating to false after completion
       profileUpdating.value = false;
     }
   }
 
-  /// Upload pop images from AddPhotoScreen (non-null images only).
   Future<bool> uploadPopImages() async {
     photosUploading.value = true;
     final files = <File>[];
@@ -358,10 +354,7 @@ class SetpuProfileController extends GetxController {
         final file = File(profileImage.value!.path);
 
         if (file.existsSync()) {
-          imagePart = MultipartBody(
-            key: "profile_pic", // 🔥 confirm this with backend
-            file: file,
-          );
+          imagePart = MultipartBody(key: "profile_pic", file: file);
         }
       }
 

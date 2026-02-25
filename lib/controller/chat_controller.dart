@@ -52,7 +52,11 @@ class ChatController extends GetxController {
   Future<void> _connectSocket(int threadId) async {
     final token = await SharedPrefsService.get('token');
 
-    await WebSocketService.connect(thread: threadId.toString(), token: token!);
+    await WebSocketService.connect(
+      id: threadId.toString(),
+      token: token!,
+      isSociety: false,
+    );
   }
 
   // ================= SOCKET =================
@@ -126,7 +130,6 @@ class ChatController extends GetxController {
 
       final myId = Get.find<UserController>().userInfo.value!.userId;
 
-      // ✅ STEP 1: Optimistic UI
       final temp = ChatMessage.local(
         thread: threadId,
         myId: myId,
@@ -136,7 +139,6 @@ class ChatController extends GetxController {
 
       messageList.add(temp);
 
-      // ✅ STEP 2: API send
       final data = await MediaService.sendImageMessage(
         threadId: threadId,
         file: image,
@@ -144,7 +146,6 @@ class ChatController extends GetxController {
 
       final realMessage = ChatMessage.fromJson(data);
 
-      // ✅ STEP 3: Replace temp safely
       _replaceTempMessage(temp.messageId, realMessage);
     } catch (e) {
       debugPrint("Image send error: $e");

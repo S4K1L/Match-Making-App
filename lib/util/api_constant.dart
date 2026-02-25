@@ -46,4 +46,6 @@ class ApiConstant {
   static const termsAndConditions = 'privacy/terms-conditions/';
 
   static const threadList = 'chat/threads/';
+  static const societyList = 'chat/societies/';
+  static const createSociety = 'chat/societies/';
 }

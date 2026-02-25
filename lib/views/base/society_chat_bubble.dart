@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-class ChatBubble extends StatelessWidget {
+class SocietyChatBubble extends StatelessWidget {
   final bool isMe;
   final String text;
   final String? attachment;
@@ -10,7 +10,7 @@ class ChatBubble extends StatelessWidget {
   final bool? isUploading;
   final bool showAvatar;
 
-  const ChatBubble({
+  const SocietyChatBubble({
     super.key,
     required this.isMe,
     required this.text,

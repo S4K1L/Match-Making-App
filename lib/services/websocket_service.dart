@@ -8,14 +8,16 @@ class WebSocketService {
   static final Map<String, List<Function(dynamic)>> _listeners = {};
 
   static Future<void> connect({
-    required String thread,
+    required String id,
     required String token,
+    required bool isSociety,
   }) async {
+    String url = isSociety
+        ? "ws://10.10.12.111:8000/ws/society"
+        : "ws://10.10.12.111:8000/ws/chat";
     if (_socket != null) return;
     try {
-      _socket = await WebSocket.connect(
-        "ws://10.10.12.111:8000/ws/chat/$thread/?token=$token",
-      );
+      _socket = await WebSocket.connect("$url/$id/?token=$token");
 
       _socket!.listen(
         (data) => _handleMessage(data),
@@ -47,7 +49,7 @@ class WebSocketService {
 
         if (_listeners.containsKey(type)) {
           for (final fn in _listeners[type]!) {
-            fn(decoded);
+            fn(decoded['data'] ?? decoded);
           }
         }
       } else {
@@ -106,6 +108,25 @@ class WebSocketService {
       "content": "",
       "attachment": null,
       "is_like": true,
+    });
+  }
+
+  static void sendRaw(String data) {
+    if (!isConnected) return;
+    _socket!.add(data);
+  }
+
+  static void sendSocietyText({required String message}) {
+    send({
+      "type": "message.send",
+      "payload": {"content": message, "attachment": null},
+    });
+  }
+
+  static void sendSocietyImage({required String imageUrl}) {
+    send({
+      "type": "message.send",
+      "payload": {"content": "", "attachment": imageUrl},
     });
   }
 }

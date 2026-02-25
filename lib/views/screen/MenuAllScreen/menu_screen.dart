@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/society_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/group_chat_screen.dart';
+import 'package:flutter_extension/views/base/society_chat_card.dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/new_community_screen.dart';
 import 'package:get/get.dart';
 
@@ -13,121 +14,56 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
+  final SocietyController _societyController = Get.put(SocietyController());
+
+  @override
+  void initState() {
+    super.initState();
+    _societyController.getAllSociety();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox.expand(
-            child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
-          ),
+          _background(),
 
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _customAppbar(),
                   const SizedBox(height: 40),
 
+                  // ✅ Reactive UI
                   Expanded(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Get.to(() => GroupChatScreen());
+                    child: Obx(() {
+                      if (_societyController.isLoading.value) {
+                        return _shimmerList();
+                      }
+
+                      if (_societyController.societyList.isEmpty) {
+                        return const Center(child: Text("No societies found"));
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: _societyController.getAllSociety,
+                        child: ListView.separated(
+                          itemCount: _societyController.societyList.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 16),
+                          itemBuilder: (context, index) {
+                            final society =
+                                _societyController.societyList[index];
+
+                            return SocietyChatCard(societyModel: society);
                           },
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 48,
-                                    width: 48,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/amiliva.png',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "MY JOIN COMMUNITY",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          letterSpacing: 0.5,
-                                          color: AppColors.textColor,
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 6),
-
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            height: 24,
-                                            width: 70,
-                                            child: Stack(
-                                              children: List.generate(4, (
-                                                index,
-                                              ) {
-                                                return Positioned(
-                                                  left: index * 16.0,
-                                                  child: CircleAvatar(
-                                                    radius: 12,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    child: CircleAvatar(
-                                                      radius: 11,
-                                                      backgroundImage: AssetImage(
-                                                        'assets/images/amiliva.png',
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                            ),
-                                          ),
-
-                                          const SizedBox(width: 8),
-
-                                          Text(
-                                            "1.5K PEOPLE",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color(0xFF001C13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Divider(color: Color(0xFF707270)),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (_, _) => SizedBox(height: 16),
-                      itemCount: 10,
-                    ),
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -135,43 +71,18 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
         ],
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
-      floatingActionButton: InkWell(
-        onTap: () {
-          Get.to(() => NewCommunityScreen());
-        },
-        child: Container(
-          width: 200,
-          height: 46,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0xFFC97E6D).withAlpha(10),
-                blurRadius: 16,
-                offset: Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.add, color: Color(0xFF234F38)),
-              SizedBox(width: 5),
-              Text(
-                "Create Society",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF234F38),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      floatingActionButton: _createButton(),
+    );
+  }
+
+  // ================= UI =================
+
+  Widget _background() {
+    return SizedBox.expand(
+      child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
     );
   }
 
@@ -183,6 +94,52 @@ class _MenuScreenState extends State<MenuScreen> {
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _createButton() {
+    return InkWell(
+      onTap: () => Get.to(() => NewCommunityScreen()),
+      child: Container(
+        width: 200,
+        height: 46,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFC97E6D).withAlpha(10),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.add, color: Color(0xFF234F38)),
+            SizedBox(width: 5),
+            Text(
+              "Create Society",
+              style: TextStyle(fontSize: 12, color: Color(0xFF234F38)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerList() {
+    return ListView.separated(
+      itemCount: 6,
+      separatorBuilder: (_, _) => const SizedBox(height: 16),
+      itemBuilder: (_, __) => Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );

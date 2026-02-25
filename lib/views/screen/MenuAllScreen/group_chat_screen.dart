@@ -1,149 +1,112 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/society_controller.dart';
+import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/model/society_model.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/society_chat_bubble.dart';
 import 'package:flutter_extension/views/screen/MenuAllScreen/add_member_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupChatScreen extends StatefulWidget {
-  const GroupChatScreen({super.key});
+  final SocietyModel societyModel;
+  const GroupChatScreen({super.key, required this.societyModel});
 
   @override
   State<GroupChatScreen> createState() => _GroupChatScreenState();
 }
 
 class _GroupChatScreenState extends State<GroupChatScreen> {
+  final SocietyController controller = Get.put(SocietyController());
+
+  final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final FocusNode focusNode = FocusNode();
+
+  bool showEmoji = false;
+  late int societyId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    societyId = widget.societyModel.id!;
+    controller.initSocietyChat(societyId);
+
+    ever(controller.societyChats, (_) => _scrollToBottom());
+
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        setState(() => showEmoji = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.disposeSocietyChat();
+    messageController.dispose();
+    scrollController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    final text = messageController.text.trim();
+    if (text.isEmpty) return;
+
+    controller.sendSocietyMessage(text);
+    messageController.clear();
+  }
+
+  void _pickCamera() {
+    controller.sendSocietyImageMessage(societyId, source: ImageSource.camera);
+  }
+
+  void _pickGallery() {
+    controller.sendSocietyImageMessage(societyId, source: ImageSource.gallery);
+  }
+
+  void _toggleEmoji() {
+    setState(() => showEmoji = !showEmoji);
+
+    if (showEmoji) {
+      focusNode.unfocus();
+    } else {
+      FocusScope.of(context).requestFocus(focusNode);
+    }
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox.expand(
-            child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
-          ),
-
-          _customAppbar(),
-
+          _background(),
+          _customAppbar(widget.societyModel),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.only(top: 130),
               child: Column(
                 children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text(
-                      "Today",
-                      style: TextStyle(
-                        color: Color(0xFF707270),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(12),
-                      children: const [
-                        ChatBubble(
-                          isMe: false,
-                          text: "Hi. Sarthak! How are you doing?",
-                          showAvatar: true,
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "Hi Shreya, I'm doing well. Thanks for asking!",
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "What do you like to do for fun?",
-                        ),
-                        ChatBubble(
-                          isMe: false,
-                          text: "What do you like to do for fun?",
-                          showAvatar: true,
-                        ),
-                        ChatBubble(
-                          isMe: true,
-                          text: "Hi Shreya, I'm doing well. Thanks for asking!",
-                        ),
-                      ],
-                    ),
-                  ),
-
-      
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 42,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 6,
-                            ),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFF8FDFF),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/icons/emoji.svg'),
-                                const SizedBox(width: 8),
-                                const Expanded(
-                                  child: TextField(
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF666666),
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: "Message",
-                                      hintStyle: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF707270),
-                                      ),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                                SvgPicture.asset('assets/icons/camera.svg'),
-                                const SizedBox(width: 12),
-                                SvgPicture.asset('assets/icons/file.svg'),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          height: 44,
-                          width: 44,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF18433B), Color(0xFF0C312B)],
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset('assets/icons/send.svg'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _messageList()),
+                  _inputField(),
+                  if (showEmoji) _emojiPicker(),
                 ],
               ),
             ),
@@ -153,7 +116,160 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     );
   }
 
-  Widget _customAppbar() {
+  Widget _background() {
+    return SizedBox.expand(
+      child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
+    );
+  }
+
+  Widget _messageList() {
+    return Obx(() {
+      final messages = controller.societyChats;
+      final myId = Get.find<UserController>().userInfo.value!.userId;
+
+      if (controller.isLoading.value && messages.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
+      return ListView.builder(
+        controller: scrollController,
+        padding: const EdgeInsets.all(12),
+        itemCount: messages.length,
+        itemBuilder: (_, i) {
+          final msg = messages[i];
+          final isMe = msg.sender?.userId == myId;
+
+          return SocietyChatBubble(
+            isMe: isMe,
+            text: msg.content,
+            attachment: msg.attachment,
+            isUploading: msg.isUploading,
+            showAvatar: !isMe,
+            userProfile: msg.sender?.profilePic ?? "",
+          );
+        },
+      );
+    });
+  }
+
+  Widget _inputField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(child: _inputBox()),
+          const SizedBox(width: 12),
+          _sendButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _inputBox() {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF8FDFF),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: _toggleEmoji,
+            child: SvgPicture.asset('assets/icons/emoji.svg'),
+          ),
+          const SizedBox(width: 8),
+
+          Expanded(
+            child: TextField(
+              controller: messageController,
+              focusNode: focusNode,
+              decoration: const InputDecoration(
+                hintText: "Message",
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+
+          GestureDetector(
+            onTap: _pickCamera,
+            child: SvgPicture.asset(
+              'assets/icons/camera.svg',
+              height: 28,
+              width: 28,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          GestureDetector(
+            onTap: _pickGallery,
+            child: SvgPicture.asset(
+              'assets/icons/file.svg',
+              height: 24,
+              width: 24,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sendButton() {
+    return GestureDetector(
+      onTap: _sendMessage,
+      child: Container(
+        height: 44,
+        width: 44,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: SvgPicture.asset('assets/icons/send.svg'),
+        ),
+      ),
+    );
+  }
+
+  Widget _emojiPicker() {
+    return SizedBox(
+      height: 250,
+      child: EmojiPicker(
+        onEmojiSelected: (category, emoji) {
+          final text = messageController.text;
+          final selection = messageController.selection;
+
+          final newText = text.replaceRange(
+            selection.start >= 0 ? selection.start : text.length,
+            selection.end >= 0 ? selection.end : text.length,
+            emoji.emoji,
+          );
+
+          messageController.value = TextEditingValue(
+            text: newText,
+            selection: TextSelection.collapsed(
+              offset:
+                  (selection.start >= 0 ? selection.start : text.length) +
+                  emoji.emoji.length,
+            ),
+          );
+
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  Widget _customAppbar(SocietyModel societyModel) {
+    final members = societyModel.fullMemberImages;
+
     return Column(
       children: [
         Container(
@@ -183,10 +299,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   Container(
                     height: 35,
                     width: 35,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: AssetImage('assets/images/amiliva.png'),
+                        image: societyModel.image != null
+                            ? NetworkImage(societyModel.fullImage)
+                            : AssetImage('assets/images/amiliva.png'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -197,7 +315,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Ethan Carter",
+                        societyModel.name.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -211,29 +329,33 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             height: 24,
                             width: 70,
                             child: Stack(
-                              children: List.generate(4, (index) {
-                                return Positioned(
-                                  left: index * 16.0,
-                                  child: CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: Colors.white,
+                              children: List.generate(
+                                members.length > 4 ? 4 : members.length,
+                                (index) {
+                                  //TODO: member picture not found - backend issue
+                                  return Positioned(
+                                    left: index * 16.0,
                                     child: CircleAvatar(
-                                      radius: 11,
-                                      backgroundImage: AssetImage(
-                                        'assets/images/amiliva.png',
+                                      radius: 12,
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 11,
+                                        backgroundImage: NetworkImage(
+                                          members[index],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }),
+                                  );
+                                },
+                              ),
                             ),
                           ),
 
                           const SizedBox(width: 8),
 
                           Text(
-                            "1.5K PEOPLE",
-                            style: TextStyle(
+                            _formatMemberCount(widget.societyModel.memberCount),
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF001C13),
@@ -256,6 +378,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                       return [
                         PopupMenuItem(
                           onTap: () {
+                            //TODO: get people list api missing
                             Get.to(() => AddMemberScreen());
                           },
                           value: 'Add people',
@@ -279,97 +402,16 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       ],
     );
   }
-}
 
-class ChatBubble extends StatelessWidget {
-  final bool isMe;
-  final String text;
-  final bool showAvatar;
+  String _formatMemberCount(int? count) {
+    if (count == null) return "0";
 
-  const ChatBubble({
-    super.key,
-    required this.isMe,
-    required this.text,
-    this.showAvatar = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isMe) {
-      // Sender message (Right side, No avatar)
-      return Align(
-        alignment: Alignment.centerRight,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF18433B), Color(0xFF0C312B)],
-            ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-              bottomLeft: Radius.circular(12),
-            ),
-          ),
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      );
+    if (count >= 1000000) {
+      return "${(count / 1000000).toStringAsFixed(1)}M PEOPLE";
+    } else if (count >= 1000) {
+      return "${(count / 1000).toStringAsFixed(1)}K PEOPLE";
     } else {
-      // Receiver message (Left side, With avatar optionally)
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (showAvatar)
-            Container(
-              height: 30,
-              width: 30,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage('assets/images/olivia.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
-          else
-            const SizedBox(width: 32), // placeholder for alignment
-
-          const SizedBox(width: 8),
-          Flexible(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Color(0xFF707270),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
+      return "$count PEOPLE";
     }
   }
 }

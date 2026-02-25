@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/society_controller.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_text_field.dart';
@@ -13,6 +16,8 @@ class NewCommunityScreen extends StatefulWidget {
 }
 
 class _NewCommunityScreenState extends State<NewCommunityScreen> {
+  final SocietyController controller = Get.put(SocietyController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,85 +37,121 @@ class _NewCommunityScreenState extends State<NewCommunityScreen> {
                   child: Row(
                     children: [
                       InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
+                        onTap: () => Get.back(),
                         child: const Icon(
                           Icons.arrow_back_ios,
                           color: Color(0xFF001C13),
                         ),
                       ),
-                      SizedBox(width: 80),
-                      Center(
-                        child: const Text(
-                          "New Society ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF001C13),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 38),
-
-                SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          height: 90,
-                          width: 104,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFFFFF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(30),
-                            child: SvgPicture.asset('assets/icons/add.svg'),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          "Upload Image",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF234F38),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 38),
-                      Text(
-                        "Name your Society",
+                      const Spacer(),
+                      const Text(
+                        "New Society",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF001C13),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      CustomTextField(
-                        hintText: "Society Name",
-                        filColor: Color(0xFFFFFFFF),
-                        filled: true,
-                      ),
-
-                      SizedBox(height: 68),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50),
-                        child: CustomButton(onTap: () {}, text: "Create"),
-                      ),
+                      const Spacer(),
                     ],
+                  ),
+                ),
+
+                const SizedBox(height: 38),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Obx(() {
+                            return InkWell(
+                              onTap: controller.pickImage,
+                              child: Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: controller.profileImage.value != null
+                                      ? DecorationImage(
+                                          image: FileImage(
+                                            File(
+                                              controller
+                                                  .profileImage
+                                                  .value!
+                                                  .path,
+                                            ),
+                                          ),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: controller.profileImage.value == null
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(30),
+                                        child: SvgPicture.asset(
+                                          'assets/icons/add.svg',
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            );
+                          }),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        const Center(
+                          child: Text(
+                            "Upload Image",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF234F38),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 38),
+
+                        const Text(
+                          "Name your Society",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF001C13),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        CustomTextField(
+                          controller: controller.societyNameController,
+                          hintText: "Society Name",
+                          filColor: Colors.white,
+                          filled: true,
+                        ),
+
+                        const SizedBox(height: 68),
+
+                        Obx(() {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: controller.isLoading.value
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : CustomButton(
+                                    onTap: controller.createSociety,
+                                    text: "Create",
+                                  ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ],

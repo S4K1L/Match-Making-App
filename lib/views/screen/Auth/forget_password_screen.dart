@@ -107,7 +107,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                             showCustomSnackBar(response, isError: true);
                           }
                         },
-                        text: "Send Otp".toUpperCase(),
+                        text: "Send Code".toUpperCase(),
                       );
                     }),
                   ],

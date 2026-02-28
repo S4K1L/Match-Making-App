@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/like_you_controller.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
 import 'package:flutter_extension/views/base/custom_radio_button.dart';
-import 'package:flutter_extension/views/base/custom_text_field.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_extension/views/base/search_text_field.dart';
 import 'package:get/get.dart';
 
 class AddMemberScreen extends StatefulWidget {
-  const AddMemberScreen({super.key});
+  final int societyId;
+  const AddMemberScreen({super.key, required this.societyId});
 
   @override
   State<AddMemberScreen> createState() => _AddMemberScreenState();
 }
 
 class _AddMemberScreenState extends State<AddMemberScreen> {
+  final LikeYouController _likeYouController = Get.put(LikeYouController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    _likeYouController.clearSelection();
+    _likeYouController.getAllLikeYou();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +36,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           SafeArea(
             child: Column(
               children: [
+                /// Header
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 15,
@@ -33,15 +45,13 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                   child: Row(
                     children: [
                       InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
+                        onTap: Get.back,
                         child: const Icon(
                           Icons.arrow_back_ios,
                           color: Color(0xFF001C13),
                         ),
                       ),
-                      SizedBox(width: 80),
+                      const Spacer(),
                       const Text(
                         "Add Member",
                         style: TextStyle(
@@ -50,73 +60,121 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                           color: Color(0xFF001C13),
                         ),
                       ),
+                      const Spacer(),
                     ],
                   ),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
+                /// ✅ Search (CONNECTED)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: CustomTextField(
-                    filColor: const Color(0xFFFFFFFF),
-                    filled: true,
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: SvgPicture.asset('assets/icons/search.svg'),
-                    ),
-
+                  child: SearchTextField(
+                    controller: _likeYouController.searchController,
+                    onChanged: _likeYouController.onSearchChanged,
                     hintText: "Search",
                   ),
                 ),
-                SizedBox(height: 22),
 
+                const SizedBox(height: 22),
+
+                /// LIST
                 Expanded(
-                  child: ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: AssetImage('assets/images/olivia.png'),
-                                fit: BoxFit.cover,
+                  child: Obx(() {
+                    if (_likeYouController.isLoading.value &&
+                        _likeYouController.likeYouList.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (_likeYouController.likeYouList.isEmpty) {
+                      return const Center(child: Text("No users found"));
+                    }
+
+                    return ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      itemCount: _likeYouController.likeYouList.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final user = _likeYouController.likeYouList[index];
+
+                        return Row(
+                          children: [
+                            /// Profile Image
+                            Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image:
+                                      (user.profilePic != null &&
+                                          user.profilePic!.isNotEmpty)
+                                      ? NetworkImage(user.profilePic!)
+                                      : const AssetImage(
+                                              'assets/images/olivia.png',
+                                            )
+                                            as ImageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            "Shanti Rahaman",
-                            style: TextStyle(
-                              color: Color(0xFF001C13),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+
+                            const SizedBox(width: 10),
+
+                            /// Name
+                            Expanded(
+                              child: Text(
+                                user.fullName,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Color(0xFF001C13),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
-                          ),
-                          Spacer(),
-                          CustomRadioButton(value: false, onChanged: (value) {}),
-                        ],
-                      );
-                    },
-                    separatorBuilder: (_, _) => SizedBox(height: 10),
-                    itemCount: 50,
-                  ),
+
+                            /// Selection
+                            Obx(() {
+                              final isSelected = _likeYouController
+                                  .isUserSelected(user.userId.toString());
+
+                              return CustomRadioButton(
+                                value: isSelected,
+                                onChanged: (_) {
+                                  _likeYouController.toggleUserSelection(
+                                    user.userId.toString(),
+                                  );
+                                },
+                              );
+                            }),
+                          ],
+                        );
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
           ),
         ],
       ),
+
+      /// BUTTON
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 93),
-        child: CustomButton(onTap: () {},
-         text: "Add",),
+        child: Obx(() {
+          return CustomButton(
+            loading: _likeYouController.isLoading.value,
+            onTap: () {
+              _likeYouController.addMemebersToSociety(widget.societyId);
+            },
+            text: "Add (${_likeYouController.selectedUserIds.length})",
+          );
+        }),
       ),
     );
   }

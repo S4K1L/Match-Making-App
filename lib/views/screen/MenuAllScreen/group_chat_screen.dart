@@ -332,7 +332,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                               children: List.generate(
                                 members.length > 4 ? 4 : members.length,
                                 (index) {
-                                  //TODO: member picture not found - backend issue
                                   return Positioned(
                                     left: index * 16.0,
                                     child: CircleAvatar(
@@ -378,8 +377,11 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                       return [
                         PopupMenuItem(
                           onTap: () {
-                            //TODO: get people list api missing
-                            Get.to(() => AddMemberScreen());
+                            Get.to(
+                              () => AddMemberScreen(
+                                societyId: widget.societyModel.id!,
+                              ),
+                            );
                           },
                           value: 'Add people',
                           child: const Text(

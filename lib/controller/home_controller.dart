@@ -125,7 +125,7 @@ class HomeController extends GetxController {
 
       myStory.value = StoryModel(
         id: list.first.id,
-        userName: list.first.user ?? "You",
+        userName: list.first.fullName ?? "You",
         mediaPaths: mediaPaths,
         isMe: true,
         createdAt: list.first.createdAt,

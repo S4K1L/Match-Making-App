@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/home_controller.dart';
-import 'package:flutter_extension/model/global_story_model.dart';
 import 'package:flutter_extension/model/mutual_story_list_model.dart';
 import 'package:flutter_extension/model/story_model.dart';
 import 'package:flutter_extension/views/screen/home/AllSubScreen/my_story_viewer.dart';
@@ -17,7 +16,7 @@ class StoryListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final stories = _buildStoryList(controller);
+      final stories = _buildStoryList();
 
       return SizedBox(
         height: 100,
@@ -26,9 +25,7 @@ class StoryListView extends StatelessWidget {
           itemCount: stories.length + 1,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
-            if (index == 0) {
-              return _buildAddStoryItem(controller);
-            }
+            if (index == 0) return _buildAddStoryItem();
 
             final item = stories[index - 1];
             final data = _mapToUI(item);
@@ -37,7 +34,7 @@ class StoryListView extends StatelessWidget {
               title: data.title,
               borderColor: data.borderColor,
               child: data.widget,
-              onTap: () => _handleTap(controller, item, data.type),
+              onTap: () => _handleTap(item, data.type),
             );
           },
         ),
@@ -45,16 +42,29 @@ class StoryListView extends StatelessWidget {
     });
   }
 
-  List<dynamic> _buildStoryList(HomeController controller) {
-    return [
-      if (controller.myStory.value != null) controller.myStory.value!,
-      ...controller.mutualStories.where(
-        (e) => e.user != controller.myStory.value?.userName,
+  // ---------------------------
+  // DATA BUILDING
+  // ---------------------------
+  List<dynamic> _buildStoryList() {
+    final list = <dynamic>[];
+
+    if (controller.myStory.value != null) {
+      list.add(controller.myStory.value);
+    }
+
+    list.addAll(
+      controller.mutualStories.where(
+        (e) => e.fullName != controller.myStory.value?.userName,
       ),
-    ];
+    );
+
+    return list;
   }
 
-  Widget _buildAddStoryItem(HomeController controller) {
+  // ---------------------------
+  // ADD STORY
+  // ---------------------------
+  Widget _buildAddStoryItem() {
     return _StoryItem(
       title: "Add Story",
       borderColor: const Color(0xFFF6C53E),
@@ -63,6 +73,9 @@ class StoryListView extends StatelessWidget {
     );
   }
 
+  // ---------------------------
+  // UI MAPPING
+  // ---------------------------
   _StoryUIData _mapToUI(dynamic item) {
     if (item is StoryModel) {
       return _StoryUIData(
@@ -74,35 +87,25 @@ class StoryListView extends StatelessWidget {
     }
 
     if (item is MutualStoryModel) {
-      final url = item.fullMediaUrl;
-
-      return _StoryUIData(
-        title: item.user ?? "User",
-        type: StoryType.mutual,
-        borderColor: Colors.green,
-        widget: _buildImage(url),
-      );
-    }
-
-    if (item is GlobalStoryModel) {
-      final url = item.popImages?.first.imageUrl;
-
       return _StoryUIData(
         title: item.fullName ?? "User",
-        type: StoryType.global,
-        borderColor: Colors.blue,
-        widget: _buildImage(url),
+        type: StoryType.mutual,
+        borderColor: Colors.green,
+        widget: _buildImage(item.fullMediaUrl),
       );
     }
 
     return _StoryUIData(
       title: "Unknown",
-      type: StoryType.global,
+      type: StoryType.mutual,
       borderColor: Colors.grey,
       widget: const ColoredBox(color: Colors.grey),
     );
   }
 
+  // ---------------------------
+  // IMAGE BUILDER
+  // ---------------------------
   Widget _buildImage(String? path) {
     if (path == null || path.isEmpty) {
       return const ColoredBox(color: Colors.grey);
@@ -115,22 +118,26 @@ class StoryListView extends StatelessWidget {
     return Image.file(File(path), fit: BoxFit.cover);
   }
 
-  void _handleTap(
-    HomeController controller,
-    dynamic item,
-    StoryType type,
-  ) async {
+  // ---------------------------
+  // NAVIGATION
+  // ---------------------------
+  void _handleTap(dynamic item, StoryType type) async {
     switch (type) {
       case StoryType.mine:
+        final story = item as StoryModel;
+
         await Get.to(
-          () =>
-              MyStoryViewer(thumb: controller.myStory.value!.mediaPaths.first),
+          () => MyStoryViewer(
+            thumb: story.mediaPaths.first,
+            storyId: story.id.toString(),
+          ),
         );
         break;
 
       case StoryType.mutual:
-      case StoryType.global:
-        await Get.to(() => OthersStoryViewer(storyId: item.id.toString()));
+        final story = item as MutualStoryModel;
+
+        await Get.to(() => OthersStoryViewer(storyId: story.id.toString()));
         break;
 
       case StoryType.add:
@@ -139,6 +146,9 @@ class StoryListView extends StatelessWidget {
   }
 }
 
+// ---------------------------
+// UI MODEL
+// ---------------------------
 class _StoryUIData {
   final String title;
   final StoryType type;
@@ -153,6 +163,9 @@ class _StoryUIData {
   });
 }
 
+// ---------------------------
+// STORY ITEM
+// ---------------------------
 class _StoryItem extends StatelessWidget {
   final String title;
   final Widget child;
@@ -199,4 +212,5 @@ class _StoryItem extends StatelessWidget {
   }
 }
 
-enum StoryType { add, mine, mutual, global }
+// ---------------------------
+enum StoryType { add, mine, mutual }

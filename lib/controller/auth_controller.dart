@@ -199,7 +199,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> deleteAccount() async {
-    await api.delete("/profile", authReq: true);
+    await api.delete(ApiConstant.deleteAccount, authReq: true);
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
   }

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_extension/model/view_model.dart';
+import 'package:flutter_extension/model/multi_body.dart';
 import 'package:flutter_extension/services/api_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/image_utils.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/views/screen/home/AllSubScreen/add_story_screen.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../model/my_story_model.dart';
 
@@ -22,28 +24,11 @@ class MyStoryController extends GetxController {
   final currentIndex = 0.obs;
   final progress = 0.0.obs;
   final isLoading = false.obs;
+  RxBool isViewerLoading = false.obs;
 
   final showViewers = false.obs;
 
-  final viewers = <Viewer>[
-    Viewer(
-      name: "Tacos al Pastor",
-      avatar: "assets/images/amiliva.png",
-      distance: "1.0 km",
-    ),
-    Viewer(
-      name: "Pierogi",
-      avatar: "assets/images/davesi.png",
-      distance: "1.0 km",
-    ),
-    Viewer(
-      name: "Moussaka",
-      avatar: "assets/images/olivia.png",
-      distance: "1.0 km",
-    ),
-  ].obs;
-
-  int get viewersCount => viewers.length;
+  RxInt totalViewers = 0.obs;
 
   MyStoryModel? get currentStory =>
       myStories.isEmpty ? null : myStories[currentIndex.value];
@@ -120,6 +105,31 @@ class MyStoryController extends GetxController {
     }
   }
 
+  Future<void> createStory(List<XFile> files) async {
+    isLoading.value = true;
+
+    try {
+      final multipartList = files
+          .map((file) => MultipartBody(key: "media", file: File(file.path)))
+          .toList();
+
+      final response = await _apiService.postMultipartData(
+        ApiConstant.mutualSystemCreateStory,
+        {},
+        multipartBody: multipartList,
+        authReq: true,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showCustomSnackBar("Story created successfully", isError: false);
+        Get.back();
+      } else {
+        showCustomSnackBar("Try again later", isError: true);
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> getStories() async {
     try {
       isLoading.value = true;
@@ -129,32 +139,32 @@ class MyStoryController extends GetxController {
         authReq: true,
       );
 
+      if (!_isSuccess(response.statusCode)) {
+        myStories.clear();
+        return;
+      }
+
       final body = jsonDecode(response.body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final dynamic data = body['data'];
+      final List data = (body['data'] as List?) ?? [];
 
-        final List results = data is List
-            ? data
-            : (data is Map && data['stories'] is List)
-            ? data['stories']
-            : <dynamic>[];
+      final stories = data
+          .map((e) => MyStoryModel.fromJson(e))
+          .where(_isValidStory)
+          .toList();
 
-        final stories = results
-            .map((e) => MyStoryModel.fromJson(e as Map<String, dynamic>))
-            .where(_isValidStory)
-            .toList();
+      myStories.assignAll(stories);
 
-        myStories.assignAll(stories);
-
-        _resetAndStart();
-      }
+      _resetAndStart();
     } catch (e) {
-      debugPrint("Error fetching stories: $e");
+      debugPrint("Story Error: $e");
+      myStories.clear();
     } finally {
       isLoading.value = false;
     }
   }
+
+  bool _isSuccess(int code) => code == 200 || code == 201;
 
   bool _isValidStory(MyStoryModel story) {
     final hasContent = story.media != null || story.text != null;

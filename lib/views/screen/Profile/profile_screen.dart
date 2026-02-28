@@ -119,7 +119,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   context,
                                   "Delete",
                                   "Are you sure you want to delete your account?",
-                                  () {},
+                                  () {
+                                    _authController.deleteAccount();
+                                  },
                                 );
                               },
                               image: "assets/icons/password.svg",

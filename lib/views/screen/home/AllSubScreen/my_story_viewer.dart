@@ -9,8 +9,8 @@ import 'package:shimmer/shimmer.dart';
 
 class MyStoryViewer extends StatefulWidget {
   final String thumb;
-
-  const MyStoryViewer({super.key, required this.thumb});
+  final String storyId;
+  const MyStoryViewer({super.key, required this.thumb, required this.storyId});
 
   @override
   State<MyStoryViewer> createState() => _MyStoryViewerState();
@@ -73,17 +73,18 @@ class _MyStoryViewerState extends State<MyStoryViewer> {
                 const SizedBox(height: 8),
                 _storyCard(context, story),
                 const SizedBox(height: 10),
-                _bottomActions(),
+                _BottomActions(story: story),
                 const SizedBox(height: 10),
               ],
             ),
           ),
         ),
+
+        /// overlay
         Obx(
           () => c.showViewers.value
               ? Positioned.fill(
                   child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
                     onTap: c.closeViewers,
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 180),
@@ -92,26 +93,18 @@ class _MyStoryViewerState extends State<MyStoryViewer> {
                     ),
                   ),
                 )
-              : const SizedBox.shrink(),
+              : const SizedBox(),
         ),
+
+        /// viewers panel
         Obx(
           () => AnimatedPositioned(
             duration: const Duration(milliseconds: 280),
-            curve: Curves.easeOutCubic,
+            bottom: c.showViewers.value ? 0 : closedBottom,
             left: 0,
             right: 0,
-            bottom: c.showViewers.value ? 0 : closedBottom,
             height: ph,
-            child: IgnorePointer(
-              ignoring: !c.showViewers.value,
-              child: SafeArea(
-                top: false,
-                left: false,
-                right: false,
-                bottom: true,
-                child: _ViewersPanel(close: c.closeViewers),
-              ),
-            ),
+            child: _ViewersPanel(story: story, close: c.closeViewers),
           ),
         ),
       ],
@@ -226,7 +219,7 @@ class _MyStoryViewerState extends State<MyStoryViewer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                story.userFullName,
+                _userController.userInfo.value!.fullName,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
@@ -245,22 +238,32 @@ class _MyStoryViewerState extends State<MyStoryViewer> {
     );
   }
 
-  Widget _bottomActions() {
+  String _formatTime(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
+    if (diff.inHours < 24) return "${diff.inHours}h ago";
+    return "${diff.inDays}d ago";
+  }
+}
+
+class _BottomActions extends StatelessWidget {
+  final MyStoryModel story;
+
+  const _BottomActions({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Get.find<MyStoryController>();
+
     return Row(
       children: [
         InkWell(
           onTap: c.openViewers,
-          child: const _OverlappingViewers(
-            avatars: [
-              "assets/images/olivia.png",
-              "assets/images/davesi.png",
-              "assets/images/amiliva.png",
-            ],
-          ),
+          child: _OverlappingViewers(viewers: story.viewers),
         ),
         const Spacer(),
         InkWell(
-          onTap: () => c.pickAddStoryImage(),
+          onTap: c.pickAddStoryImage,
           child: Column(
             children: [
               SvgPicture.asset('assets/icons/story.svg'),
@@ -271,13 +274,6 @@ class _MyStoryViewerState extends State<MyStoryViewer> {
         ),
       ],
     );
-  }
-
-  String _formatTime(DateTime time) {
-    final diff = DateTime.now().difference(time);
-    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
-    if (diff.inHours < 24) return "${diff.inHours}h ago";
-    return "${diff.inDays}d ago";
   }
 }
 
@@ -394,12 +390,14 @@ class _StoryProgressBar extends StatelessWidget {
 
 // -------- Viewers Panel --------
 class _ViewersPanel extends StatelessWidget {
+  final MyStoryModel story;
   final VoidCallback close;
-  const _ViewersPanel({required this.close});
+
+  const _ViewersPanel({required this.story, required this.close});
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<MyStoryController>();
+    final viewers = story.viewers;
 
     return GestureDetector(
       onVerticalDragUpdate: (d) {
@@ -408,9 +406,9 @@ class _ViewersPanel extends StatelessWidget {
       child: Material(
         elevation: 12,
         color: Colors.transparent,
-
         child: Stack(
           children: [
+            /// Background (OLD UI)
             SizedBox.expand(
               child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
             ),
@@ -423,6 +421,8 @@ class _ViewersPanel extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 10),
+
+                  /// Drag handle
                   Container(
                     width: 48,
                     height: 5,
@@ -431,9 +431,10 @@ class _ViewersPanel extends StatelessWidget {
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
+
                   const SizedBox(height: 12),
 
-                  // header with Done
+                  /// Header (OLD UI)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
@@ -468,104 +469,119 @@ class _ViewersPanel extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  // thumbnails + add story card
                   SizedBox(
-                    height: 104,
-                    child: Obx(
-                      () => ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: c.myStories.length + 1,
-                        separatorBuilder: (_, _) => const SizedBox(width: 12),
-                        itemBuilder: (context, index) {
-                          if (index < c.myStories.length) {
-                            final p = c.myStories[index];
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Container(
-                                width: 92,
-                                height: 104,
-                                color: const Color(0xFFEFF1F4),
-                                child: p.media != null
-                                    ? Image.network(p.media!, fit: BoxFit.cover)
-                                    : Image.asset(
-                                        Images.greeyBackground,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            );
-                          } else {
-                            return _AddStoryCard(onTap: () {});
-                          }
-                        },
-                      ),
+                    height: 145,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: 2, // story + add story
+                      separatorBuilder: (_, _) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        /// 1️⃣ Story thumbnail
+                        if (index == 0) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              width: 92,
+                              height: 145,
+                              color: const Color(0xFFEFF1F4),
+                              child: story.media != null
+                                  ? Image.network(
+                                      story.media!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      Images.greeyBackground,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                          );
+                        }
+
+                        return _AddStoryCard(
+                          onTap: () {
+                            final controller = Get.find<MyStoryController>();
+                            controller.pickAddStoryImage();
+                          },
+                        );
+                      },
                     ),
                   ),
-
                   const SizedBox(height: 16),
 
-                  // title
+                  /// Title (FIXED with new data)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Obx(
-                      () => Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Viewers(${c.viewersCount})",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF1A1A1A),
-                          ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Viewers(${viewers.length})",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A1A1A),
                         ),
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 8),
 
-                  // list
+                  /// Viewer list (OLD UI + NEW DATA)
                   Expanded(
-                    child: Obx(
-                      () => ListView.separated(
-                        padding: const EdgeInsets.only(top: 4, bottom: 18),
-                        itemCount: c.viewers.length,
-                        separatorBuilder: (_, _) => const SizedBox(),
-                        itemBuilder: (context, i) {
-                          final v = c.viewers[i];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: AssetImage(v.avatar),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.only(top: 4, bottom: 18),
+                      itemCount: viewers.length,
+                      separatorBuilder: (_, _) => const SizedBox(),
+                      itemBuilder: (context, i) {
+                        final v = viewers[i];
+
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                (v.profilePic != null &&
+                                    v.profilePic!.isNotEmpty)
+                                ? NetworkImage(v.profilePic!)
+                                : null,
+                            child:
+                                (v.profilePic == null || v.profilePic!.isEmpty)
+                                ? Text(
+                                    v.fullName.isNotEmpty
+                                        ? v.fullName[0].toUpperCase()
+                                        : "?",
+                                  )
+                                : null,
+                          ),
+
+                          title: Text(
+                            v.fullName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF1A1A1A),
+                              fontSize: 14,
                             ),
-                            title: Text(
-                              v.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF1A1A1A),
-                                fontSize: 14,
+                          ),
+
+                          subtitle: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: Color(0xFF707270),
                               ),
-                            ),
-                            subtitle: Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 14,
+                              const SizedBox(width: 4),
+                              Text(
+                                v.distance != null ? "${v.distance} km" : "",
+                                style: const TextStyle(
                                   color: Color(0xFF707270),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  v.distance,
-                                  style: const TextStyle(
-                                    color: Color(0xFF707270),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            onTap: () {},
-                          );
-                        },
-                      ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -573,38 +589,6 @@ class _ViewersPanel extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// -------- Helpers --------
-class _OverlappingViewers extends StatelessWidget {
-  final List<String> avatars;
-  const _OverlappingViewers({required this.avatars});
-
-  @override
-  Widget build(BuildContext context) {
-    const double size = 28, overlap = 12;
-    return SizedBox(
-      height: size,
-      width: size + (avatars.length - 1) * overlap + 8,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          for (int i = 0; i < avatars.length; i++)
-            Positioned(
-              left: i * overlap,
-              child: CircleAvatar(
-                radius: size / 2,
-                backgroundColor: Colors.white, // thin ring
-                child: CircleAvatar(
-                  radius: (size / 2) - 2,
-                  backgroundImage: AssetImage(avatars[i]),
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -642,6 +626,55 @@ class _AddStoryCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// -------- Helpers --------
+class _OverlappingViewers extends StatelessWidget {
+  final List<StoryViewerModel> viewers;
+
+  const _OverlappingViewers({required this.viewers});
+
+  @override
+  Widget build(BuildContext context) {
+    const size = 28.0;
+    const overlap = 12.0;
+
+    final list = viewers.take(3).toList();
+
+    if (list.isEmpty) return const SizedBox();
+
+    return SizedBox(
+      height: size,
+      width: size + (list.length - 1) * overlap,
+      child: Stack(
+        children: List.generate(list.length, (i) {
+          final v = list[i];
+
+          return Positioned(
+            left: i * overlap,
+            child: CircleAvatar(
+              radius: size / 2,
+              backgroundColor: Colors.white,
+              child: CircleAvatar(
+                radius: size / 2 - 2,
+                backgroundImage:
+                    (v.profilePic != null && v.profilePic!.isNotEmpty)
+                    ? NetworkImage(v.profilePic!)
+                    : null,
+                child: (v.profilePic == null || v.profilePic!.isEmpty)
+                    ? Text(
+                        v.fullName.isNotEmpty
+                            ? v.fullName[0].toUpperCase()
+                            : "?",
+                      )
+                    : null,
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

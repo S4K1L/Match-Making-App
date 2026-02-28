@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/multi_body.dart';
@@ -241,16 +240,6 @@ class SocietyController extends GetxController {
 
     if (index != -1) {
       societyChats[index] = newMessage;
-    }
-  }
-
-  void _markMessageFailed(int tempId) {
-    final index = societyChats.indexWhere((m) => m.id == tempId);
-
-    if (index != -1) {
-      final msg = societyChats[index];
-
-      societyChats[index] = msg.copyWith(isUploading: false, isFailed: true);
     }
   }
 }

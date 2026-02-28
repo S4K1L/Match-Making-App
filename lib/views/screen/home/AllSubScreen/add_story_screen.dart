@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/my_story_controller.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/screen/Notification/notification_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddStoryScreen extends StatefulWidget {
   final String imagePath;
@@ -14,6 +17,7 @@ class AddStoryScreen extends StatefulWidget {
 }
 
 class _AddStoryScreenState extends State<AddStoryScreen> {
+  final MyStoryController _controller = Get.find<MyStoryController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,16 +52,21 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                         ),
                       ),
 
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/icons/notification.svg',
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => NotificationScreen());
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/icons/notification.svg',
+                            ),
                           ),
                         ),
                       ),
@@ -83,24 +92,29 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          height: 37,
-                          width: 91,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+                      GestureDetector(
+                        onTap: () {
+                          _controller.createStory([XFile(widget.imagePath)]);
+                        },
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            height: 37,
+                            width: 91,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF18433B), Color(0xFF0C312B)],
+                              ),
+                              borderRadius: BorderRadius.circular(46),
                             ),
-                            borderRadius: BorderRadius.circular(46),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              "Post",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
+                            child: const Center(
+                              child: Text(
+                                "Post",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ),

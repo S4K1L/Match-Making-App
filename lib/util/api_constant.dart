@@ -48,4 +48,6 @@ class ApiConstant {
   static const threadList = 'chat/threads/';
   static const societyList = 'chat/societies/';
   static const createSociety = 'chat/societies/';
+
+  static const deleteAccount = 'account/profile/delete/';
 }

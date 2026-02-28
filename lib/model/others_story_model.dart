@@ -14,28 +14,20 @@ class OthersStoryResponseModel {
       userId: json['user_id'] ?? 0,
       username: json['username'] ?? '',
       stories: (json['stories'] as List? ?? [])
-          .map((e) => OthersStoryModel.fromJson(e as Map<String, dynamic>))
+          .map((e) => OthersStoryModel.fromJson(e))
           .toList(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'user_id': userId,
-      'username': username,
-      'stories': stories.map((e) => e.toJson()).toList(),
-    };
   }
 }
 
 class OthersStoryModel {
   final String id;
-  final String user;
   final int userId;
-  final String userFullName;
+  final String fullName;
 
   final String? text;
   final String? media;
+  final String? profilePic;
 
   final int viewCount;
   final int likesCount;
@@ -46,11 +38,11 @@ class OthersStoryModel {
 
   OthersStoryModel({
     required this.id,
-    required this.user,
     required this.userId,
-    required this.userFullName,
+    required this.fullName,
     this.text,
     this.media,
+    this.profilePic,
     required this.viewCount,
     required this.likesCount,
     required this.isLiked,
@@ -61,12 +53,12 @@ class OthersStoryModel {
   factory OthersStoryModel.fromJson(Map<String, dynamic> json) {
     return OthersStoryModel(
       id: json['id'] ?? '',
-      user: json['user'] ?? '',
       userId: json['user_id'] ?? 0,
-      userFullName: json['user_full_name'] ?? '',
+      fullName: json['full_name'] ?? '',
 
-      text: json['text'] as String?,
-      media: json['media'] as String?,
+      text: json['text'],
+      media: json['media'],
+      profilePic: json['profile_pic'],
 
       viewCount: json['view_count'] ?? 0,
       likesCount: json['likes_count'] ?? 0,
@@ -75,22 +67,6 @@ class OthersStoryModel {
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
       expiresAt: DateTime.tryParse(json['expires_at'] ?? '') ?? DateTime.now(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'user': user,
-      'user_id': userId,
-      'user_full_name': userFullName,
-      'text': text,
-      'media': media,
-      'view_count': viewCount,
-      'likes_count': likesCount,
-      'is_liked': isLiked,
-      'created_at': createdAt.toIso8601String(),
-      'expires_at': expiresAt.toIso8601String(),
-    };
   }
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);

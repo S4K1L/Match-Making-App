@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/model/like_you_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:get/get.dart';
 
 class LikeYouController extends GetxController {
@@ -16,6 +17,7 @@ class LikeYouController extends GetxController {
 
   RxList<LikeYouModel> likeYouList = <LikeYouModel>[].obs;
   RxList<LikeYouModel> originalList = <LikeYouModel>[].obs;
+  RxSet<String> selectedUserIds = <String>{}.obs;
 
   var selectedGender = ''.obs;
   RxDouble distance = 60.0.obs;
@@ -23,6 +25,51 @@ class LikeYouController extends GetxController {
   var rv = const RangeValues(18, 32).obs;
 
   Timer? _debounce;
+
+  List<String> getSelectedUserIds() {
+    return selectedUserIds.toList();
+  }
+
+  void toggleUserSelection(String id) {
+    if (selectedUserIds.contains(id)) {
+      selectedUserIds.remove(id);
+    } else {
+      selectedUserIds.add(id);
+    }
+  }
+
+  bool isUserSelected(String id) {
+    return selectedUserIds.contains(id);
+  }
+
+  void clearSelection() {
+    selectedUserIds.clear();
+  }
+
+  Future<void> addMemebersToSociety(int societyId) async {
+    isLoading.value = true;
+    try {
+      final response = await _apiService.post(
+        "chat/societies/$societyId/members/",
+        {"user_ids": getSelectedUserIds()},
+        authReq: true,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showCustomSnackBar(
+          "Society members added successfully",
+          isError: false,
+        );
+        Get.back();
+      } else {
+        showCustomSnackBar("Please try again", isError: true);
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();

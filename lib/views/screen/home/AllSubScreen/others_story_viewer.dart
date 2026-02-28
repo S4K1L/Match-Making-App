@@ -3,6 +3,7 @@ import 'package:flutter_extension/controller/connection_controller.dart';
 import 'package:flutter_extension/controller/others_story_controller.dart';
 import 'package:flutter_extension/model/others_story_model.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -238,17 +239,18 @@ class _OthersStoryViewerState extends State<OthersStoryViewer> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //TODO: Need to change with real user profile
-          const CircleAvatar(
+          CircleAvatar(
             radius: 16,
-            backgroundImage: AssetImage("assets/images/olivia.png"),
+            backgroundImage: story.profilePic != null
+                ? NetworkImage(story.profilePic!)
+                : const AssetImage("assets/images/olivia.png"),
           ),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                story.userFullName,
+                story.fullName,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               Text(
@@ -280,7 +282,9 @@ class _OthersStoryViewerState extends State<OthersStoryViewer> {
                 ),
                 PopupMenuItem(
                   onTap: () {
-                    _connectionController.reportUser(story.userId.toString());
+                    Get.to(
+                      () => ReportAndIssueScreen(id: story.userId.toString()),
+                    );
                   },
                   value: 'Report profile',
                   child: const Row(

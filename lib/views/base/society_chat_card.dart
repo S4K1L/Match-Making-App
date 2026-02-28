@@ -63,7 +63,6 @@ class SocietyChatCard extends StatelessWidget {
                           children: List.generate(
                             members.length > 4 ? 4 : members.length,
                             (index) {
-                              //TODO: member picture not found - backend issue
                               return Positioned(
                                 left: index * 16.0,
                                 child: CircleAvatar(

@@ -3,7 +3,6 @@ import 'package:flutter_extension/controller/society_controller.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/society_chat_card.dart';
-import 'package:flutter_extension/views/screen/MenuAllScreen/new_community_screen.dart';
 import 'package:get/get.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -72,13 +71,11 @@ class _MenuScreenState extends State<MenuScreen> {
         ],
       ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
-      floatingActionButton: _createButton(),
+      // floatingActionButton: _createButton(),
     );
   }
-
-  // ================= UI =================
 
   Widget _background() {
     return SizedBox.expand(
@@ -99,37 +96,37 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  Widget _createButton() {
-    return InkWell(
-      onTap: () => Get.to(() => NewCommunityScreen()),
-      child: Container(
-        width: 200,
-        height: 46,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFC97E6D).withAlpha(10),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.add, color: Color(0xFF234F38)),
-            SizedBox(width: 5),
-            Text(
-              "Create Society",
-              style: TextStyle(fontSize: 12, color: Color(0xFF234F38)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _createButton() {
+  //   return InkWell(
+  //     onTap: () => Get.to(() => NewCommunityScreen()),
+  //     child: Container(
+  //       width: 200,
+  //       height: 46,
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(30),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: const Color(0xFFC97E6D).withAlpha(10),
+  //             blurRadius: 16,
+  //             offset: const Offset(0, 8),
+  //           ),
+  //         ],
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: const [
+  //           Icon(Icons.add, color: Color(0xFF234F38)),
+  //           SizedBox(width: 5),
+  //           Text(
+  //             "Create Society",
+  //             style: TextStyle(fontSize: 12, color: Color(0xFF234F38)),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _shimmerList() {
     return ListView.separated(

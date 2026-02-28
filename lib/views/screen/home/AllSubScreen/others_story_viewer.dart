@@ -25,6 +25,7 @@ class _OthersStoryViewerState extends State<OthersStoryViewer> {
   void initState() {
     super.initState();
     c.getStories(widget.storyId);
+    c.viewStory(widget.storyId);
   }
 
   @override

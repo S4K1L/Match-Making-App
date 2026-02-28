@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/model/chat_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/views/base/custom_snackbar.dart';
@@ -9,6 +12,8 @@ class ConnectionController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLiked = false.obs;
   RxInt selectedReasonIndex = (-1).obs;
+
+  RxList<ChatThreadModel> chatList = <ChatThreadModel>[].obs;
 
   RxList<dynamic> reasons = [
     "Harassment or bullying",
@@ -116,6 +121,29 @@ class ConnectionController extends GetxController {
       }
     } catch (e) {
       debugPrint("Error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> createThread(int id) async {
+    isLoading.value = true;
+    try {
+      final response = await _apiService.post(ApiConstant.createThreads, {
+        "other_user_id": id,
+      }, authReq: true);
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = body['data'] ?? <String, dynamic>{};
+
+        chatList.add(ChatThreadModel.fromJson(data));
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
     } finally {
       isLoading.value = false;
     }

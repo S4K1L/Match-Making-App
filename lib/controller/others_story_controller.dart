@@ -123,6 +123,18 @@ class OthersStoryController extends GetxController {
     startProgress();
   }
 
+  Future<void> viewStory(String storyId) async {
+    try {
+      await _apiService.post(
+        "mutual-system/story/$storyId/view/",
+        {},
+        authReq: true,
+      );
+    } catch (e) {
+      debugPrint("Error fetching stories: $e");
+    }
+  }
+
   @override
   void onClose() {
     _timer?.cancel();

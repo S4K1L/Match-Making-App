@@ -29,6 +29,8 @@ dependencies:
   mime: ^2.0.0
   flutter_html: ^3.0.0
   emoji_picker_flutter: ^4.4.0
+  agora_rtc_engine: ^6.5.3
+  google_sign_in: ^6.1.6
 
 
 

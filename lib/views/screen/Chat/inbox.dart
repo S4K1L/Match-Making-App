@@ -7,6 +7,8 @@ import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/chat_shimmer.dart';
+import 'package:flutter_extension/views/screen/Chat/audio_calling_screen.dart';
+import 'package:flutter_extension/views/screen/Chat/video_calling_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -158,7 +160,7 @@ class _InboxScreenState extends State<InboxScreen> {
             ),
           );
 
-          setState(() {}); // ✅ force rebuild (important)
+          setState(() {});
         },
       ),
     );
@@ -316,9 +318,34 @@ class _InboxScreenState extends State<InboxScreen> {
               const SizedBox(width: 12),
               _userInfo(user),
               const Spacer(),
-              //TODO: Add call by agora
               GestureDetector(
+                onTap: () {
+                  Get.to(
+                    () => AudioCallingScreen(
+                      id: user!.userId.toString(),
+                      image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
+                      name: user.fullName!,
+                    ),
+                  );
+                },
                 child: SvgPicture.asset('assets/icons/mobile.svg'),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () {
+                  Get.to(
+                    () => VideoCallingScreen(
+                      id: user!.userId.toString(),
+                      image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
+                      name: user.fullName!,
+                    ),
+                  );
+                },
+                child: Icon(
+                  Icons.video_call_outlined,
+                  size: 28,
+                  color: Colors.grey.shade700,
+                ),
               ),
               PopupMenuButton(
                 itemBuilder: (_) => [
@@ -361,7 +388,13 @@ class _InboxScreenState extends State<InboxScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(user!.fullName, style: TextStyle(color: AppColors.textColor)),
-        const Text("Active", style: TextStyle(fontSize: 10)),
+        Row(
+          children: [
+            CircleAvatar(radius: 4, backgroundColor: Colors.greenAccent),
+            const SizedBox(width: 4),
+            const Text("Active", style: TextStyle(fontSize: 10)),
+          ],
+        ),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/views/screen/Auth/login_screen.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../services/api_service.dart';
 import '../services/shared_prefs_service.dart';
 
@@ -11,6 +12,52 @@ class AuthController extends GetxController {
   RxBool isLoggedIn = false.obs;
   RxBool isLoading = false.obs;
   final api = ApiService();
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+  Future<String> googleLogin() async {
+    isLoading(true);
+
+    try {
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+
+      if (account == null) {
+        return "Google sign-in cancelled";
+      }
+
+      final GoogleSignInAuthentication auth = await account.authentication;
+
+      if (auth.idToken == null) {
+        return "Failed to get Google ID token";
+      }
+
+      final payload = {
+        "email": account.email,
+        "full_name": account.displayName ?? "",
+        "google_id": account.id,
+        "picture": account.photoUrl ?? "",
+        "id_token": auth.idToken,
+      };
+
+      final response = await api.post("api/v1/accounts/googleLogin/", payload);
+
+      final body = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        setToken(body['access']);
+        Get.find<UserController>().setInfo(body['data']['user_profile']);
+        return "success";
+      }
+
+      return body['message'] ?? "Authentication failed";
+    } catch (e, s) {
+      debugPrint("Google login error: $e");
+      debugPrintStack(stackTrace: s);
+      return "Google login failed";
+    } finally {
+      isLoading(false);
+    }
+  }
 
   Future<String> login(
     String email,

@@ -7,6 +7,8 @@
 	<key>CFBundleDisplayName</key>
 	<key>NSPhotoLibraryUsageDescription</key>
      <string>We need access to your photo library to select images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone required for audio calls</string>
     <key>NSCameraUsageDescription</key>
     <string>This app requires camera access to scan and verify your face and to capture an image for identity verification.</string>
 	<string>Flutter Extension</string>

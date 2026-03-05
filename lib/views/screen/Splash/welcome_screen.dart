@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/system_chrom.dart';
@@ -60,7 +61,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   text: "Login with Google",
                   icon: "assets/icons/google.svg",
                   onTap: () {
-                    Get.offAllNamed(AppRoutes.homeScreen);
+                    Get.find<AuthController>().googleLogin();
                   },
                 ),
                 const SizedBox(height: 32),

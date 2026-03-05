@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'package:flutter_extension/services/api_service.dart';
 import 'package:get/get.dart';
 
 class CallingController extends GetxController {
-  final ApiService _apiService = ApiService();
+  // final ApiService _apiService = ApiService();
 
   RxBool isReceived = false.obs;
   RxBool isMute = false.obs;
@@ -22,13 +21,10 @@ class CallingController extends GetxController {
   }
 
   Future<void> startCall(String receiverId) async {
-    // simulate receiver accept
     Future.delayed(const Duration(seconds: 5), () {
       isReceived.value = true;
       startTimer();
     });
-
-    // await _apiService.startCall(receiverId);
   }
 
   void startTimer() {

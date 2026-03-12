@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_extension/helper/dependency_injection.dart';
-
 import 'package:flutter_extension/theme/light_theme.dart';
 import 'package:flutter_extension/util/app_constants.dart';
 import 'package:get/get.dart';
@@ -17,6 +16,7 @@ void main() async {
     ),
   );
   InitialBindings().dependencies();
+
   runApp(MyApp());
 }
 

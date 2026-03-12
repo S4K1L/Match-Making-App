@@ -1,5 +1,6 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/calling_controller.dart';
 import 'package:flutter_extension/controller/chat_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/chat_model.dart';
@@ -7,8 +8,7 @@ import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/chat_shimmer.dart';
-import 'package:flutter_extension/views/screen/Chat/audio_calling_screen.dart';
-import 'package:flutter_extension/views/screen/Chat/video_calling_screen.dart';
+import 'package:flutter_extension/views/screen/Chat/calling_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -321,10 +321,11 @@ class _InboxScreenState extends State<InboxScreen> {
               GestureDetector(
                 onTap: () {
                   Get.to(
-                    () => AudioCallingScreen(
-                      id: user!.userId.toString(),
+                    () => CallingScreen(
+                      receiverId: user!.userId.toString(),
                       image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
                       name: user.fullName!,
+                      type: CallType.audio,
                     ),
                   );
                 },
@@ -334,10 +335,11 @@ class _InboxScreenState extends State<InboxScreen> {
               GestureDetector(
                 onTap: () {
                   Get.to(
-                    () => VideoCallingScreen(
-                      id: user!.userId.toString(),
+                    () => CallingScreen(
+                      receiverId: user!.userId.toString(),
                       image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
                       name: user.fullName!,
+                      type: CallType.video,
                     ),
                   );
                 },

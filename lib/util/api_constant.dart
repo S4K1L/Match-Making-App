@@ -1,7 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
 class ApiConstant {
+  static const String AGORA_APP_ID = '8ecdf7d688884a8ea68fa568741453d9';
   static const String BASE_URL = 'http://10.10.12.111:8000/v1/';
+  static const String BASE_URL_SOCKET =
+      'ws://10.10.12.111:8000/ws/call/?token=';
   static const String BASE_URL_IMAGE = 'http://10.10.12.111:8000';
 
   static const String signUp = 'account/signup/';

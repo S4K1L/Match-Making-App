@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
+import 'package:flutter_extension/services/calling_socket_services.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/bottom_menu.dart';
 import 'package:flutter_extension/views/base/system_chrom.dart';
@@ -22,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 3), () async {
       final isLoggedIn = await authController.previouslyLoggedIn();
       if (isLoggedIn) {
+        Get.put(CallSocketService()).initSocket();
         Get.offAll(() => CustomBottomNavbar());
       } else {
         Get.offNamed(AppRoutes.welcomeScreen);

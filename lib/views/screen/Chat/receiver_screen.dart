@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/calling_controller.dart';
+import 'package:flutter_extension/model/call_model.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:get/get.dart';
 
 class CallReceiveScreen extends StatefulWidget {
-  final String id;
-  final String channel;
-  final String name;
-  final String image;
+  final CallModel call;
   final CallType type;
 
-  const CallReceiveScreen({
-    super.key,
-    required this.id,
-    required this.channel,
-    required this.name,
-    required this.image,
-    required this.type,
-  });
+  const CallReceiveScreen({super.key, required this.call, required this.type});
 
   @override
   State<CallReceiveScreen> createState() => _CallReceiveScreenState();
@@ -38,15 +29,17 @@ class _CallReceiveScreenState extends State<CallReceiveScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Display caller image
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(widget.image),
+                backgroundImage: NetworkImage(widget.call.callerProfilePic),
               ),
 
               const SizedBox(height: 12),
 
+              // Display caller name
               Text(
-                widget.name,
+                widget.call.callerFullName,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -54,9 +47,7 @@ class _CallReceiveScreenState extends State<CallReceiveScreen> {
               ),
 
               const SizedBox(height: 10),
-
               const Text("Incoming call"),
-
               const SizedBox(height: 40),
 
               Row(
@@ -80,8 +71,8 @@ class _CallReceiveScreenState extends State<CallReceiveScreen> {
                   GestureDetector(
                     onTap: () async {
                       await controller.acceptCall(
-                        widget.id,
-                        widget.channel,
+                        widget.call.callId,
+                        widget.call.channel,
                         widget.type,
                       );
                     },

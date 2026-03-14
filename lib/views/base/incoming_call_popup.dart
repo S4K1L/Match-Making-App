@@ -1,71 +1,72 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_extension/controller/calling_controller.dart';
-import 'package:flutter_extension/views/screen/Chat/receiver_screen.dart';
-import 'package:get/get.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_extension/controller/calling_controller.dart';
+// import 'package:flutter_extension/model/call_model.dart';
+// import 'package:flutter_extension/util/api_constant.dart';
+// import 'package:flutter_extension/views/screen/Chat/receiver_screen.dart';
+// import 'package:get/get.dart';
 
-class IncomingCallPopup extends StatelessWidget {
-  final Map data;
+// class IncomingCallPopup extends StatelessWidget {
+//   final CallModel callModel;
 
-  const IncomingCallPopup({super.key, required this.data});
+//   const IncomingCallPopup({super.key, required this.callModel});
 
-  @override
-  Widget build(BuildContext context) {
-    final callerName = data["caller_name"];
-    final callerImage = data["caller_image"];
+//   @override
+//   Widget build(BuildContext context) {
+//     return Dialog(
+//       child: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             CircleAvatar(
+//               radius: 40,
+//               backgroundImage: NetworkImage(
+//                 ApiConstant.BASE_URL + callModel.callerProfilePic,
+//               ),
+//             ),
 
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: NetworkImage(callerImage),
-            ),
+//             const SizedBox(height: 10),
 
-            const SizedBox(height: 10),
+//             Text(
+//               callModel.callerFullName,
+//               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//             ),
 
-            Text(
-              callerName,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+//             const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 IconButton(
+//                   icon: const Icon(Icons.call_end, color: Colors.red),
+//                   onPressed: () {
+//                     Get.back();
+//                   },
+//                 ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.call_end, color: Colors.red),
-                  onPressed: () {
-                    Get.back();
-                  },
-                ),
+//                 IconButton(
+//                   icon: const Icon(Icons.call, color: Colors.green),
+//                   onPressed: () {
+//                     Get.back();
 
-                IconButton(
-                  icon: const Icon(Icons.call, color: Colors.green),
-                  onPressed: () {
-                    Get.back();
-
-                    Get.to(
-                      () => CallReceiveScreen(
-                        id: data["call_id"],
-                        channel: data["channel"],
-                        name: callerName,
-                        image: callerImage,
-                        type: data["call_type"] == "video"
-                            ? CallType.video
-                            : CallType.audio,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//                     Get.to(
+//                       () => CallReceiveScreen(
+//                         id: callModel.callId,
+//                         channel: callModel.channel,
+//                         name: callModel.callerFullName,
+//                         image: callModel.callerProfilePic,
+//                         type: callModel.callType == "video"
+//                             ? CallType.video
+//                             : CallType.audio,
+//                       ),
+//                     );
+//                   },
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

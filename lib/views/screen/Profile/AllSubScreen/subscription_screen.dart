@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:flutter_extension/views/screen/Profile/AllSubScreen/confirmation_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -11,44 +12,327 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  Widget _buildFeatureLine(String text, bool isAllLargeCaps) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 1),
+            child: Text(
+              "• ",
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xFF4A4A4A),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              isAllLargeCaps ? text.toUpperCase() : text,
+              style: const TextStyle(
+                fontFamily: 'Cinzel',
+                fontSize: 11,
+                color: Color(0xFF4A4A4A),
+                fontWeight: FontWeight.w400,
+                height: 1.2,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard({
+    required String title,
+    required Widget icon,
+    required List<String> features,
+    required bool isPremium,
+    required bool isSolidButton,
+    required double width,
+    required double height,
+    required bool isAllLargeCaps,
+    required VoidCallback onTap,
+    bool? isLoading = false,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBE1BF),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isPremium ? 0.2 : 0.05),
+            blurRadius: isPremium ? 25 : 10,
+            spreadRadius: isPremium ? 2 : 1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: Column(
+        children: [
+          SizedBox(height: 35, child: icon),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Cinzel',
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFD49E17),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: features
+                  .map((f) => _buildFeatureLine(f, isAllLargeCaps))
+                  .toList(),
+            ),
+          ),
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              height: 38,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: isSolidButton
+                    ? const LinearGradient(
+                        colors: [Color(0xFFE9C54F), Color(0xFFD49E17)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      )
+                    : null,
+                border: isSolidButton
+                    ? null
+                    : Border.all(color: const Color(0xFFD49E17), width: 1.5),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              alignment: Alignment.center,
+              child: isLoading == true
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: const CircularProgressIndicator(),
+                    )
+                  : Text(
+                      "SUBSCRIBE",
+                      style: TextStyle(
+                        fontFamily: 'Cinzel',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        color: isSolidButton
+                            ? Colors.white
+                            : const Color(0xFFD49E17),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double sideCardWidth = (screenWidth * 0.35).clamp(120.0, 140.0);
+    double centerCardWidth = (screenWidth * 0.42).clamp(145.0, 165.0);
+
     return Scaffold(
       body: Stack(
         children: [
           SizedBox.expand(
-            child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
+            child: Image.asset(Images.greeyBackground, fit: BoxFit.fill),
           ),
-
           SafeArea(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   child: Row(
                     children: [
                       InkWell(
                         onTap: () {
                           Get.back();
                         },
-                        child: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Color(0xFF707270),
+                        child: const SizedBox(
+                          width: 40,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Color(0xFF494949),
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 65),
-                      Text(
-                        "Subscription",
+                      const Spacer(),
+                      const Text(
+                        "SUBSCRIPTION",
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textColor,
+                          fontFamily: 'Cinzel',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF133F36),
                         ),
                       ),
+                      const Spacer(),
+                      const SizedBox(width: 40),
                     ],
                   ),
                 ),
-                const SizedBox(height: 48),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Subscription Cards Stack
+                      SizedBox(
+                        height: 400,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // SOCIETY
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15),
+                                child: _buildCard(
+                                  title: "SOCIETY",
+                                  icon: SvgPicture.asset(
+                                    'assets/icons/society.svg',
+                                    color: const Color(0xFFD49E17),
+                                    width: 38,
+                                  ),
+                                  isPremium: false,
+                                  isLoading: false,
+                                  isSolidButton: true,
+                                  width: sideCardWidth,
+                                  height: 350,
+                                  isAllLargeCaps: true,
+
+                                  onTap: () {
+                                    Get.to(() => const ConfirmationScreen());
+                                  },
+                                  features: [
+                                    "Core Matching",
+                                    "Limited Daily Likes",
+                                    "Standard Swiping",
+                                    "Basic Profile Filters",
+                                    "One Profile Refresh a Month",
+                                    "Weekly Boosts",
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // ELITE
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 15),
+                                child: _buildCard(
+                                  title: "ELITE",
+                                  icon: SvgPicture.asset(
+                                    'assets/icons/elite.svg',
+                                    color: const Color(0xFFD49E17),
+                                    width: 38,
+                                  ),
+                                  isPremium: false,
+                                  isSolidButton: true,
+                                  width: sideCardWidth,
+                                  height: 350,
+                                  isAllLargeCaps: true,
+                                  onTap: () {
+                                    // Get.to(() => const ConfirmationScreen());
+                                  },
+                                  features: [
+                                    "Unlimited Likes & Matches",
+                                    "Full Value & Lifestyle Filters",
+                                    "All Society Room Access",
+                                    "View “Who Liked You”",
+                                    "Advance Matching",
+                                    "Weekly Boosts",
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // PREMIUM
+                            Align(
+                              alignment: Alignment.center,
+                              child: _buildCard(
+                                title: "PREMIUM",
+                                icon: SvgPicture.asset(
+                                  'assets/icons/crown.svg',
+                                  color: const Color(0xFFD49E17),
+                                  width: 38,
+                                ),
+                                isPremium: true,
+                                isSolidButton: true,
+                                width: centerCardWidth,
+                                height: 380,
+                                isAllLargeCaps: false,
+                                onTap: () {
+                                  // Get.to(() => const ConfirmationScreen());
+                                },
+                                features: [
+                                  "Unlimited Likes & Matches",
+                                  "Full Values & Lifestyle Filters",
+                                  "Access to All Society Rooms",
+                                  "View “Who Liked You”",
+                                  "Advanced Matching",
+                                  "Premium Badge",
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 50),
+
+                      // SUBSCRIBE NOW Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: InkWell(
+                          onTap: () {
+                            // Get.to(() => const ConfirmationScreen());
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF133F36), // Deep green
+                              borderRadius: BorderRadius.circular(35),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              "SUBSCRIBE NOW",
+                              style: TextStyle(
+                                fontFamily: 'Cinzel',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

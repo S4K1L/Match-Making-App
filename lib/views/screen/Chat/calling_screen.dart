@@ -81,13 +81,19 @@ class _CallingScreenState extends State<CallingScreen> {
     return Stack(
       children: [
         Obx(() {
+          if (!callingController.isEngineReady.value) {
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            );
+          }
+
           if (callingController.remoteUid.value != 0) {
             return AgoraVideoView(
               controller: VideoViewController.remote(
-                rtcEngine: callingController.agoraEngine,
+                rtcEngine: callingController.agoraEngine!,
                 canvas: VideoCanvas(uid: callingController.remoteUid.value),
                 connection: RtcConnection(
-                  channelId: callingController.channelName!,
+                  channelId: callingController.channelId!,
                 ),
               ),
             );
@@ -102,12 +108,17 @@ class _CallingScreenState extends State<CallingScreen> {
           child: SizedBox(
             width: 120,
             height: 160,
-            child: AgoraVideoView(
-              controller: VideoViewController(
-                rtcEngine: callingController.agoraEngine,
-                canvas: const VideoCanvas(uid: 0),
-              ),
-            ),
+            child: Obx(() {
+              if (!callingController.isEngineReady.value) {
+                return const SizedBox();
+              }
+              return AgoraVideoView(
+                controller: VideoViewController(
+                  rtcEngine: callingController.agoraEngine!,
+                  canvas: const VideoCanvas(uid: 0),
+                ),
+              );
+            }),
           ),
         ),
       ],

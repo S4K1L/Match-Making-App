@@ -12,6 +12,10 @@ class ProfileUpdateModel {
   final int? heightFeet;
   final int? heightInches;
   final String? dob;
+
+  final double? latitude;
+  final double? longitude;
+
   final List<String>? brings;
   final List<String>? that;
   final List<String>? lookingFor;
@@ -34,6 +38,8 @@ class ProfileUpdateModel {
     this.heightFeet,
     this.heightInches,
     this.dob,
+    this.latitude,
+    this.longitude,
     this.brings,
     this.that,
     this.lookingFor,
@@ -46,45 +52,64 @@ class ProfileUpdateModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
 
-    // Add fields to the map only if they are non-null and non-empty
     if (fullName != null && fullName!.isNotEmpty) map['full_name'] = fullName;
     if (username != null && username!.isNotEmpty) map['username'] = username;
     if (phone != null && phone!.isNotEmpty) map['phone'] = phone;
     if (bio != null && bio!.isNotEmpty) map['bio'] = bio;
+
     if (gender != null && gender!.isNotEmpty) {
-      map['gender'] = gender!.toUpperCase(); // Uppercase if required by the API
+      map['gender'] = gender!.toUpperCase();
     }
+
     if (country != null && country!.isNotEmpty) map['country'] = country;
     if (city != null && city!.isNotEmpty) map['city'] = city;
     if (province != null && province!.isNotEmpty) map['province'] = province;
     if (location != null && location!.isNotEmpty) map['location'] = location;
+
     if (distance != null) map['distance'] = distance;
     if (heightFeet != null) map['height_feet'] = heightFeet;
     if (heightInches != null) map['height_inches'] = heightInches;
     if (dob != null && dob!.isNotEmpty) map['dob'] = dob;
 
-    // Convert lists to uppercase where necessary and add to the map
+    if (latitude != null) map['latitude'] = latitude;
+    if (longitude != null) map['longitude'] = longitude;
+
+    if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
+      map['geo'] = {
+        "lat": latitude.toString(),
+        "long": longitude.toString(),
+      };
+    }
+
     if (brings != null && brings!.isNotEmpty) {
       map['brings'] = brings!.map((e) => e.toUpperCase()).toList();
     }
+
     if (that != null && that!.isNotEmpty) {
       map['that'] = that!
           .map((e) => e.toUpperCase().replaceAll(' ', '_'))
           .toList();
     }
+
     if (lookingFor != null && lookingFor!.isNotEmpty) {
       map['looking_for'] = lookingFor;
     }
+
     if (professionalField != null && professionalField!.isNotEmpty) {
       map['professional_field'] = professionalField;
     }
+
     if (interests != null && interests!.isNotEmpty) {
       map['interests'] = interests;
     }
+
     if (lifestyle != null && lifestyle!.isNotEmpty) {
       map['lifestyle'] = lifestyle;
     }
-    if (hobbies != null && hobbies!.isNotEmpty) map['hobbies'] = hobbies;
+
+    if (hobbies != null && hobbies!.isNotEmpty) {
+      map['hobbies'] = hobbies;
+    }
 
     return map;
   }

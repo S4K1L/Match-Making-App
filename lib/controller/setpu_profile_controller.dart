@@ -1,11 +1,13 @@
 // ignore_for_file: unrelated_type_equality_checks
 
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/multi_body.dart';
 import 'package:flutter_extension/model/profile_update_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
+import 'package:flutter_extension/services/shared_prefs_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,6 +47,9 @@ class SetpuProfileController extends GetxController {
 
   final RxBool profileUpdating = false.obs;
   final RxBool photosUploading = false.obs;
+
+  RxDouble latitude = 0.0.obs;
+  RxDouble longitude = 0.0.obs;
 
   Future<void> profileImagePicker() async {
     final XFile? picked = await picker.pickImage(source: ImageSource.gallery);
@@ -185,6 +190,17 @@ class SetpuProfileController extends GetxController {
     selectedRelations.clear();
   }
 
+  Future<void> getLocation() async {
+    try {
+      final lat = await SharedPrefsService.get("latitude");
+      final lng = await SharedPrefsService.get("longitude");
+      if (lat != null) latitude.value = double.parse(lat.toString());
+      if (lng != null) longitude.value = double.parse(lng.toString());
+    } catch (e) {
+      debugPrint("Error fetching location: \$e");
+    }
+  }
+
   ProfileUpdateModel buildProfileUpdateModel() {
     // Distance calculation logic
     int? dist;
@@ -263,6 +279,8 @@ class SetpuProfileController extends GetxController {
 
       // Bio
       bio: bioController.text.trim().isEmpty ? null : bioController.text.trim(),
+      latitude: latitude.value,
+      longitude: longitude.value,
     );
   }
 
@@ -290,10 +308,13 @@ class SetpuProfileController extends GetxController {
   Future<bool> updateProfile() async {
     profileUpdating.value = true;
     try {
+      await getLocation();
       final model = buildProfileUpdateModel();
+      final Map<String, dynamic> payload = model.toJson();
+
       final result = await _apiService.patch(
         ApiConstant.updateProfile,
-        model.toJson(),
+        payload,
         authReq: true,
       );
       if (result.statusCode == 200 || result.statusCode == 201) {
@@ -332,6 +353,23 @@ class SetpuProfileController extends GetxController {
         authReq: true,
         multipartBody: multipart,
       );
+
+      // Upload main photo as profile picture
+      if (images.isNotEmpty && images[0] != null && images[0]!.path.isNotEmpty) {
+        final pFile = File(images[0]!.path);
+        if (pFile.existsSync()) {
+          final dpPart = MultipartBody(key: "profile_pic", file: pFile);
+          await _apiService.patchMultipartData(
+            ApiConstant.updateProfile,
+            {},
+            multipartBody: [dpPart],
+            authReq: true,
+          );
+        }
+      }
+
+      await Get.find<UserController>().getInfo();
+
       if (result.statusCode == 200 || result.statusCode == 201) return true;
       return false;
     } catch (e) {
@@ -346,7 +384,16 @@ class SetpuProfileController extends GetxController {
     profileUpdating.value = true;
 
     try {
+      await getLocation();
       final model = buildProfileUpdateModel();
+      final Map<String, dynamic> payload = model.toJson();
+
+      if (latitude.value != 0.0 && longitude.value != 0.0) {
+        payload['geo'] = jsonEncode({
+          "lat": latitude.value.toString(),
+          "long": longitude.value.toString(),
+        });
+      }
 
       MultipartBody? imagePart;
 
@@ -360,7 +407,7 @@ class SetpuProfileController extends GetxController {
 
       final result = await _apiService.patchMultipartData(
         ApiConstant.updateProfile,
-        model.toJson(),
+        payload,
         multipartBody: imagePart != null ? [imagePart] : [],
         authReq: true,
       );

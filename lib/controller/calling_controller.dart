@@ -5,12 +5,11 @@ import 'dart:io';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_extension/model/agora_token_model.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../services/agora_service.dart';
 import '../services/api_service.dart';
-import '../services/shared_prefs_service.dart';
 import '../util/api_constant.dart';
 
 enum CallType { audio, video }
@@ -22,22 +21,34 @@ class CallingController extends GetxController {
   final AgoraService _agora = AgoraService();
   final AudioPlayer _ringPlayer = AudioPlayer();
 
-  RtcEngine get agoraEngine => _agora.engine;
+  RtcEngine? get agoraEngine => _agora.engine;
 
   final Rx<CallState> callState = CallState.ringing.obs;
   final RxInt remoteUid = 0.obs;
   final RxInt callDuration = 0.obs;
   final RxBool isMute = false.obs;
   final RxBool isSpeaker = false.obs;
+  final RxBool isEngineReady = false.obs;
 
   Timer? _timer;
   WebSocket? socket;
 
   String? callId;
-  String? channelName;
+  String? channelId;
   CallType? callType;
 
   bool _agoraInitialized = false;
+
+  Future<AgoraTokenResponse> getCallToken(String channelId) async {
+    final response = await _apiService.post(
+      "call/agora-token/?channel=$channelId",
+      {},
+      authReq: true,
+    );
+    final body = jsonDecode(response.body);
+    final data = body["data"];
+    return AgoraTokenResponse.fromJson(data);
+  }
 
   Future<void> startCall(String receiverId, CallType type) async {
     callType = type;
@@ -55,29 +66,33 @@ class CallingController extends GetxController {
     final data = body["data"];
 
     callId = data["call_id"];
-    channelName = data["channel"];
+    channelId = data["channel"];
+
+    final tokenResponse = await getCallToken(channelId!);
 
     await _initializeAgora(type);
-    final token = await SharedPrefsService.get("token");
-    await _agora.joinChannel(channelName!, token);
+    await _agora.joinChannel(
+      channelId!,
+      tokenResponse.token,
+      tokenResponse.uid,
+    );
   }
 
   Future<void> acceptCall(String id, String channel, CallType type) async {
     callType = type;
     callId = id;
-    channelName = channel;
 
     callState.value = CallState.connecting;
 
     await _requestPermissions(type);
     await _stopRingtone();
 
-    await _apiService.post("v1/call/$id/accept/", {}, authReq: true);
+    await _apiService.post("call/$id/accept/", {}, authReq: true);
+    final tokenResponse = await getCallToken(channel);
 
     await _initializeAgora(type);
 
-    final token = await SharedPrefsService.get("token");
-    await _agora.joinChannel(channel, token);
+    await _agora.joinChannel(channel, tokenResponse.token, tokenResponse.uid);
   }
 
   Future<void> _initializeAgora(CallType type) async {
@@ -87,10 +102,10 @@ class CallingController extends GetxController {
 
     if (type == CallType.video) {
       await _agora.enableVideo();
-      await _agora.engine.startPreview();
+      await _agora.engine?.startPreview();
     }
 
-    _agora.engine.registerEventHandler(
+    _agora.engine?.registerEventHandler(
       RtcEngineEventHandler(
         onUserJoined: (_, uid, __) {
           remoteUid.value = uid;
@@ -105,6 +120,7 @@ class CallingController extends GetxController {
     );
 
     _agoraInitialized = true;
+    isEngineReady.value = true;
   }
 
   Future<void> _requestPermissions(CallType type) async {
@@ -196,6 +212,7 @@ class CallingController extends GetxController {
     _ringPlayer.dispose();
     _agora.dispose();
     _agoraInitialized = false;
+    isEngineReady.value = false;
 
     super.onClose();
   }

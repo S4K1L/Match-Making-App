@@ -11,6 +11,10 @@
 	<string>This app requires microphone access for audio calls.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access for video calls.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open to help you make meaningful connections based on your location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>This app uses Bluetooth for audio devices during calls.</string><string>Flutter Extension</string>
 	<key>CFBundleExecutable</key>

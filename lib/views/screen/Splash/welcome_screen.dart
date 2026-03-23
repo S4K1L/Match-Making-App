@@ -74,6 +74,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       color: Color(0xFFF6C53E),
                       fontWeight: FontWeight.w500,
                     ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Get.offNamed(AppRoutes.signupScreen);
+                      },
                     children: [
                       TextSpan(
                         text: " Sign up".toUpperCase(),
@@ -104,7 +108,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     required Function()? onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -131,7 +135,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   SvgPicture.asset(icon),
@@ -139,7 +143,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Text(
                     text.toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 14,
+                      // fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: Color(0xFFF6C53E),
                       fontFamily: "Cinzel",

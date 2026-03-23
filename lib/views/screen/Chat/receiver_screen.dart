@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/calling_controller.dart';
 import 'package:flutter_extension/model/call_model.dart';
+import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:get/get.dart';
+import 'ongoing_call.dart'; // import your OngoignCall page
 
 class CallReceiveScreen extends StatefulWidget {
   final CallModel call;
@@ -15,7 +17,21 @@ class CallReceiveScreen extends StatefulWidget {
 }
 
 class _CallReceiveScreenState extends State<CallReceiveScreen> {
-  final CallingController controller = Get.put(CallingController());
+  late final CallingController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Reuse existing controller instance or create one if not yet registered
+    controller = Get.isRegistered<CallingController>()
+        ? Get.find<CallingController>()
+        : Get.put(CallingController());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +41,17 @@ class _CallReceiveScreenState extends State<CallReceiveScreen> {
           Positioned.fill(
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
-
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Display caller image
+              const SizedBox(height: 40),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(widget.call.callerProfilePic),
+                backgroundImage: NetworkImage(
+                  ApiConstant.BASE_URL_IMAGE + widget.call.callerProfilePic,
+                ),
               ),
-
               const SizedBox(height: 12),
-
-              // Display caller name
               Text(
                 widget.call.callerFullName,
                 style: const TextStyle(
@@ -45,45 +59,53 @@ class _CallReceiveScreenState extends State<CallReceiveScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
               const SizedBox(height: 10),
               const Text("Incoming call"),
-              const SizedBox(height: 40),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  /// DECLINE
-                  GestureDetector(
-                    onTap: () {
-                      controller.endCall();
-                    },
-                    child: const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.red,
-                      child: Icon(Icons.call_end),
+              const Spacer(),
+              SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    /// DECLINE
+                    GestureDetector(
+                      onTap: () {
+                        controller.rejectCall();
+                        Get.back(); // close the incoming call screen
+                      },
+                      child: const CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.call_end),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 80),
 
-                  const SizedBox(width: 40),
+                    /// ACCEPT
+                    GestureDetector(
+                      onTap: () async {
+                        // Accept the call
+                        await controller.acceptCall(
+                          widget.call.callId,
+                          widget.call.channel,
+                          widget.type,
+                        );
 
-                  /// ACCEPT
-                  GestureDetector(
-                    onTap: () async {
-                      await controller.acceptCall(
-                        widget.call.callId,
-                        widget.call.channel,
-                        widget.type,
-                      );
-                    },
-                    child: const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.call),
+                        // Navigate to ongoing call page
+                        Get.off(
+                          () =>
+                              OngoignCall(call: widget.call, type: widget.type),
+                        );
+                      },
+                      child: const CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.green,
+                        child: Icon(Icons.call),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ],

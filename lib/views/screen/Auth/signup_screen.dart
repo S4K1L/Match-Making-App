@@ -48,9 +48,8 @@ class _SignupScreenState extends State<SignupScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 140),
-                Center(child: Image.asset(Images.appLogo)),
-                const SizedBox(height: 40),
+                SafeArea(child: Center(child: Image.asset(Images.appLogo))),
+                const SizedBox(height: 20),
                 Text(
                   "Enter your email or Phone".toUpperCase(),
                   style: const TextStyle(

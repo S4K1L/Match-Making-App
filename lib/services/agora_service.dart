@@ -9,7 +9,12 @@ class AgoraService {
     if (engineCreated) return;
     engine = createAgoraRtcEngine();
 
-    await engine?.initialize(RtcEngineContext(appId: appId));
+    try {
+      await engine?.initialize(RtcEngineContext(appId: appId));
+    } catch (e) {
+      debugPrint("Agora initialize error: $e");
+      return;
+    }
 
     /// required for 1-to-1 calling
     await engine?.setChannelProfile(
@@ -22,9 +27,16 @@ class AgoraService {
 
     /// better audio configuration for calling
     await engine?.setAudioProfile(
-      profile: AudioProfileType.audioProfileDefault,
+      profile: AudioProfileType.audioProfileSpeechStandard,
       scenario: AudioScenarioType.audioScenarioDefault,
     );
+
+    /// enable speakerphone by default so both sides can hear each other
+    try {
+      await engine?.setEnableSpeakerphone(true);
+    } catch (e) {
+      debugPrint("Agora default speaker error: $e");
+    }
 
     engineCreated = true;
   }
@@ -70,6 +82,7 @@ class AgoraService {
 
   void dispose() {
     engine?.release();
+    engine = null;
     engineCreated = false;
   }
 }

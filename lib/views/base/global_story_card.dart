@@ -145,14 +145,7 @@ class GlobalStoryCardView extends StatelessWidget {
                                     .cast<String>()
                                     .take(3)
                                     .map<Widget>(
-                                      (e) => Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 12,
-                                          ),
-                                          child: buildTag(e),
-                                        ),
-                                      ),
+                                      (e) => Expanded(child: buildTag(e)),
                                     )
                                     .toList(),
                               ),
@@ -195,17 +188,23 @@ class GlobalStoryCardView extends StatelessWidget {
   }
 
   Widget buildTag(String text) {
-    return Container(
-      height: 30,
-      padding: const EdgeInsets.symmetric(horizontal: 3),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white),
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 12, color: Colors.white),
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Container(
+        height: 30,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.white),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );

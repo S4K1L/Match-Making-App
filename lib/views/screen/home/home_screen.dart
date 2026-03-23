@@ -34,29 +34,30 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Image.asset(Images.greeyBackground, fit: BoxFit.cover),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _customAppbar(),
-
-                  const SizedBox(height: 22),
-                  //TODO: Story Details work left
-                  StoryListView(controller: _homeController),
-                  const SizedBox(height: 18),
-                  const Text(
-                    "Near You",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF141615),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _customAppbar(),
+                    const SizedBox(height: 22),
+                    //TODO: Story Details work left
+                    StoryListView(controller: _homeController),
+                    const SizedBox(height: 18),
+                    const Text(
+                      "Near You",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF141615),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  GlobalStoryCardView(controller: _homeController),
-                ],
+                    const SizedBox(height: 12),
+                    GlobalStoryCardView(controller: _homeController),
+                  ],
+                ),
               ),
             ),
           ),

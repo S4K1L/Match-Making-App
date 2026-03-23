@@ -5,10 +5,11 @@ class AgoraTokenResponse {
   AgoraTokenResponse({required this.token, required this.uid});
 
   factory AgoraTokenResponse.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] ?? {};
     return AgoraTokenResponse(
-      token: data['token'] ?? '',
-      uid: data['uid'] ?? 0,
+      token: json['token'] ?? '',
+      uid: json['uid'] is int
+          ? json['uid']
+          : int.tryParse(json['uid']?.toString() ?? '0') ?? 0,
     );
   }
 

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/chat_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/chat_model.dart';
+import 'package:flutter_extension/services/one_signal_services.dart';
 import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
@@ -101,6 +104,21 @@ class _InboxScreenState extends State<InboxScreen> {
         );
       }
     });
+  }
+
+  void _openImagePreview(String? attachment, String? localPath) {
+    final ImageProvider? provider;
+    if (localPath != null && localPath.isNotEmpty) {
+      provider = FileImage(File(localPath));
+    } else if (attachment != null && attachment.isNotEmpty) {
+      provider = NetworkImage(attachment);
+    } else {
+      provider = null;
+    }
+
+    if (provider == null) return;
+
+    Get.to(() => _ChatImagePreviewScreen(imageProvider: provider!));
   }
 
   @override
@@ -209,6 +227,7 @@ class _InboxScreenState extends State<InboxScreen> {
             isUploading: msg.isUploading,
             showAvatar: !isMe,
             userProfile: msg.sender?.profilePic ?? "",
+            onImageTap: () => _openImagePreview(msg.attachment, msg.localPath),
           );
         },
       );
@@ -334,6 +353,17 @@ class _InboxScreenState extends State<InboxScreen> {
                 iconSize: const Size(24, 24),
                 buttonSize: const Size(24, 24),
                 icon: ButtonIcon(icon: SvgPicture.asset('assets/icons/mobile.svg',height: 24,width: 24)),
+                onPressed: (code, message, errorInvitees) async {
+                  if (code != '0' || user == null) return;
+                  final me = Get.find<UserController>().userInfo.value;
+                  await OneSignalHelper.sendOfflineCallPush(
+                    calleeUserId: user.userId.toString(),
+                    isVideoCall: false,
+                    callerUserId: me?.userId.toString(),
+                    callerName: me?.fullName,
+                    threadId: threadId,
+                  );
+                },
               ),
               const SizedBox(width: 12),
               ZegoSendCallInvitationButton(
@@ -349,6 +379,17 @@ class _InboxScreenState extends State<InboxScreen> {
                     color: Colors.grey.shade700,
                   ),
                 ),
+                onPressed: (code, message, errorInvitees) async {
+                  if (code != '0' || user == null) return;
+                  final me = Get.find<UserController>().userInfo.value;
+                  await OneSignalHelper.sendOfflineCallPush(
+                    calleeUserId: user.userId.toString(),
+                    isVideoCall: true,
+                    callerUserId: me?.userId.toString(),
+                    callerName: me?.fullName,
+                    threadId: threadId,
+                  );
+                },
               ),
               PopupMenuButton(
                 itemBuilder: (_) => [
@@ -406,5 +447,32 @@ class _InboxScreenState extends State<InboxScreen> {
   String _fullImage(String path) {
     if (path.startsWith("http")) return path;
     return ApiConstant.BASE_URL_IMAGE + path;
+  }
+}
+
+class _ChatImagePreviewScreen extends StatelessWidget {
+  final ImageProvider imageProvider;
+
+  const _ChatImagePreviewScreen({required this.imageProvider});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          minScale: 0.8,
+          maxScale: 4.0,
+          child: Image(
+            image: imageProvider,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
   }
 }

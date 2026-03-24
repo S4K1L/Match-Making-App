@@ -39,6 +39,8 @@ dependencies:
   zego_uikit_signaling_plugin: ^2.8.20
   purchases_flutter: ^9.15.1
   purchases_ui_flutter: ^9.15.1
+  onesignal_flutter: ^5.4.5
+  app_badge_plus: ^1.2.7
 
 
 dev_dependencies:

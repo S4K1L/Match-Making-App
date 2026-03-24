@@ -9,6 +9,7 @@ class ChatBubble extends StatelessWidget {
   final String? userProfile;
   final bool? isUploading;
   final bool showAvatar;
+  final VoidCallback? onImageTap;
 
   const ChatBubble({
     super.key,
@@ -19,6 +20,7 @@ class ChatBubble extends StatelessWidget {
     this.localPath,
     this.isUploading,
     this.showAvatar = false,
+    this.onImageTap,
   });
 
   @override
@@ -103,9 +105,17 @@ class ChatBubble extends StatelessWidget {
   }
 
   Widget _image(ImageProvider provider) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image(image: provider, width: 150, height: 150, fit: BoxFit.cover),
+    return GestureDetector(
+      onTap: onImageTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image(
+          image: provider,
+          width: 150,
+          height: 150,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 

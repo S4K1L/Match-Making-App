@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/subscription_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/services/one_signal_services.dart';
 import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/views/screen/Auth/login_screen.dart';
@@ -55,6 +56,10 @@ class AuthController extends GetxController {
         Get.find<UserController>().setInfo(body['data']['user_profile']);
         final userId = Get.find<UserController>().userInfo.value?.userId;
         if (userId != null) {
+          await OneSignalHelper.onUserLogin(
+            userId: userId.toString(),
+            email: account.email,
+          );
           await Get.find<SubscriptionController>().onUserAuthenticated(
             userId.toString(),
           );
@@ -92,6 +97,14 @@ class AuthController extends GetxController {
         final accessToken = body['data']['tokens']['access'];
         Get.find<UserController>().setInfo(userData);
         await setToken(accessToken);
+        final userId = Get.find<UserController>().userInfo.value?.userId;
+        final email = Get.find<UserController>().userInfo.value?.email;
+        if (userId != null) {
+          await OneSignalHelper.onUserLogin(
+            userId: userId.toString(),
+            email: email,
+          );
+        }
         await Get.find<SubscriptionController>().onUserAuthenticated(
           userData['user_id'].toString(),
         );
@@ -252,7 +265,12 @@ class AuthController extends GetxController {
       if (message == "success") {
         debugPrint("🟡 Token: $token");
         final userId = Get.find<UserController>().userInfo.value?.userId;
+        final email = Get.find<UserController>().userInfo.value?.email;
         if (userId != null) {
+          await OneSignalHelper.onUserLogin(
+            userId: userId.toString(),
+            email: email,
+          );
           await Get.find<SubscriptionController>().onUserAuthenticated(
             userId.toString(),
           );
@@ -268,6 +286,7 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     ZegoCallService.uninit();
+    await OneSignalHelper.onUserLogout();
     await Get.find<SubscriptionController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
@@ -277,6 +296,7 @@ class AuthController extends GetxController {
   Future<void> deleteAccount() async {
     await api.delete(ApiConstant.deleteAccount, authReq: true);
     ZegoCallService.uninit();
+    await OneSignalHelper.onUserLogout();
     await Get.find<SubscriptionController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());

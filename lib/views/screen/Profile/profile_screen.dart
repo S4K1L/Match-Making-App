@@ -2,7 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/services/one_signal_services.dart';
+import 'package:flutter_extension/services/shared_prefs_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
+import 'package:flutter_extension/util/app_constants.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/custom_button.dart';
@@ -27,6 +30,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthController _authController = Get.find<AuthController>();
   final UserController _userController = Get.find<UserController>();
   bool isSwitch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationPreference();
+  }
+
+  Future<void> _loadNotificationPreference() async {
+    final cached = await SharedPrefsService.get<bool>(
+      AppConstants.PUSH_NOTIFICATION_ENABLED,
+    );
+    setState(() {
+      isSwitch = cached ?? true;
+    });
+  }
+
+  Future<void> _onNotificationToggle(bool value) async {
+    setState(() {
+      isSwitch = value;
+    });
+
+    await SharedPrefsService.set(AppConstants.PUSH_NOTIFICATION_ENABLED, value);
+    if (value) {
+      OneSignalHelper.optIn();
+      OneSignalHelper.requestPushPermission();
+    } else {
+      OneSignalHelper.optOut();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,9 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               trailing: CustomSwitch(
                                 value: isSwitch,
                                 onChanged: (value) {
-                                  setState(() {
-                                    isSwitch = value;
-                                  });
+                                  _onNotificationToggle(value);
                                 },
                               ),
                             ),

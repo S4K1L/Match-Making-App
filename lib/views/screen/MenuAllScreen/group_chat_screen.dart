@@ -2,6 +2,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/society_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/model/society_model.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_extension/views/screen/MenuAllScreen/add_member_screen.d
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:zego_uikit/zego_uikit.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class GroupChatScreen extends StatefulWidget {
   final SocietyModel societyModel;
@@ -269,6 +272,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   Widget _customAppbar(SocietyModel societyModel) {
     final members = societyModel.fullMemberImages;
+    final myId = Get.find<UserController>().userInfo.value?.userId.toString();
 
     return Column(
       children: [
@@ -365,10 +369,115 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ],
                   ),
                   const Spacer(),
+                  Obx(() {
+                    final inviteesFromMembers = controller.societyMembers
+                        .where((m) => m.userId.toString() != myId)
+                        .map(
+                          (m) => ZegoUIKitUser(
+                            id: m.userId.toString(),
+                            name: m.fullName,
+                          ),
+                        )
+                        .toList();
+                    final invitees = inviteesFromMembers.isNotEmpty
+                        ? inviteesFromMembers
+                        : controller.societyChats
+                              .where((m) => m.sender != null)
+                              .map((m) => m.sender!)
+                              .where((s) => s.userId.toString() != myId)
+                              .fold<Map<String, ZegoUIKitUser>>({}, (acc, s) {
+                                acc[s.userId.toString()] = ZegoUIKitUser(
+                                  id: s.userId.toString(),
+                                  name: s.fullName,
+                                );
+                                return acc;
+                              })
+                              .values
+                              .toList();
 
-                  SvgPicture.asset('assets/icons/mobile.svg'),
+                    return ZegoSendCallInvitationButton(
+                      isVideoCall: false,
+                      resourceID: ZegoCallConfig.callResourceId,
+                      invitees: invitees,
+                      iconSize: const Size(24, 24),
+                      buttonSize: const Size(24, 24),
+                      icon: ButtonIcon(
+                        icon: SvgPicture.asset(
+                          'assets/icons/mobile.svg',
+                          height: 24,
+                          width: 24,
+                        ),
+                      ),
+                      onPressed: (code, message, errorInvitees) {
+                        if (invitees.isEmpty) {
+                          Get.snackbar(
+                            "Call",
+                            "No group members available for call.",
+                          );
+                          return;
+                        }
+                        if (code != '0') {
+                          Get.snackbar("Call failed", message);
+                        }
+                      },
+                    );
+                  }),
 
                   const SizedBox(width: 10),
+                  Obx(() {
+                    final inviteesFromMembers = controller.societyMembers
+                        .where((m) => m.userId.toString() != myId)
+                        .map(
+                          (m) => ZegoUIKitUser(
+                            id: m.userId.toString(),
+                            name: m.fullName,
+                          ),
+                        )
+                        .toList();
+                    final invitees = inviteesFromMembers.isNotEmpty
+                        ? inviteesFromMembers
+                        : controller.societyChats
+                              .where((m) => m.sender != null)
+                              .map((m) => m.sender!)
+                              .where((s) => s.userId.toString() != myId)
+                              .fold<Map<String, ZegoUIKitUser>>({}, (acc, s) {
+                                acc[s.userId.toString()] = ZegoUIKitUser(
+                                  id: s.userId.toString(),
+                                  name: s.fullName,
+                                );
+                                return acc;
+                              })
+                              .values
+                              .toList();
+
+                    return ZegoSendCallInvitationButton(
+                      isVideoCall: true,
+                      resourceID: ZegoCallConfig.callResourceId,
+                      invitees: invitees,
+                      iconSize: const Size(28, 28),
+                      buttonSize: const Size(28, 28),
+                      icon: ButtonIcon(
+                        icon: const Icon(
+                          Icons.video_camera_front_outlined,
+                          color: Color(0xFF001C13),
+                          size: 26,
+                        ),
+                      ),
+                      onPressed: (code, message, errorInvitees) {
+                        if (invitees.isEmpty) {
+                          Get.snackbar(
+                            "Call",
+                            "No group members available for call.",
+                          );
+                          return;
+                        }
+                        if (code != '0') {
+                          Get.snackbar("Call failed", message);
+                        }
+                      },
+                    );
+                  }),
+                  const SizedBox(width: 6),
                   PopupMenuButton(
                     color: const Color(0xFFFFFFFF),
                     onSelected: (value) {},

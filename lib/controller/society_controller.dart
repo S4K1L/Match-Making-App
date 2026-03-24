@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/multi_body.dart';
+import 'package:flutter_extension/model/like_you_model.dart';
 import 'package:flutter_extension/model/society_chat_model.dart';
 import 'package:flutter_extension/model/society_model.dart';
 import 'package:flutter_extension/services/api_service.dart';
@@ -24,6 +25,7 @@ class SocietyController extends GetxController {
 
   RxList<SocietyModel> societyList = <SocietyModel>[].obs;
   RxList<SocietyChatModel> societyChats = <SocietyChatModel>[].obs;
+  RxList<LikeYouModel> societyMembers = <LikeYouModel>[].obs;
 
   final TextEditingController societyNameController = TextEditingController();
 
@@ -33,6 +35,7 @@ class SocietyController extends GetxController {
     activeSocietyId = societyId;
 
     await _connectSocket(societyId);
+    await getSocietyMembers(societyId);
     await getAllSocietyMessages(societyId);
 
     WebSocketService.on("message", _handleIncomingMessage);
@@ -40,6 +43,7 @@ class SocietyController extends GetxController {
 
   void disposeSocietyChat() {
     activeSocietyId = null;
+    societyMembers.clear();
     WebSocketService.off("message");
     WebSocketService.disconnect();
   }
@@ -134,11 +138,31 @@ class SocietyController extends GetxController {
         societyChats.assignAll(
           data.map((e) => SocietyChatModel.fromJson(e)).toList(),
         );
+        _mergeMembersFromMessages();
       }
     } catch (e) {
       debugPrint("Error: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> getSocietyMembers(int societyId) async {
+    try {
+      final response = await _apiService.get(
+        "chat/societies/$societyId/members/",
+        authReq: true,
+      );
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final List data = body['data'] ?? [];
+        societyMembers.assignAll(
+          data.map((e) => LikeYouModel.fromJson(e)).toList(),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error fetching society members: $e");
     }
   }
 
@@ -240,6 +264,34 @@ class SocietyController extends GetxController {
 
     if (index != -1) {
       societyChats[index] = newMessage;
+      _mergeMembersFromMessages();
+    }
+  }
+
+  void _mergeMembersFromMessages() {
+    if (societyChats.isEmpty) return;
+
+    final existingIds = societyMembers.map((m) => m.userId).toSet();
+    final senderMap = <int, LikeYouModel>{};
+
+    for (final chat in societyChats) {
+      final sender = chat.sender;
+      if (sender == null) continue;
+      if (existingIds.contains(sender.userId)) continue;
+
+      senderMap[sender.userId] = LikeYouModel(
+        userId: sender.userId,
+        username: sender.username,
+        fullName: sender.fullName,
+        isOnline: sender.isOnline,
+        profilePic: sender.profilePic,
+        hobbies: const [],
+        distance: null,
+      );
+    }
+
+    if (senderMap.isNotEmpty) {
+      societyMembers.addAll(senderMap.values.toList());
     }
   }
 }

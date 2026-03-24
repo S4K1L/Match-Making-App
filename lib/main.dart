@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_extension/helper/dependency_injection.dart';
+import 'package:flutter_extension/services/one_signal_services.dart';
 import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/theme/light_theme.dart';
 import 'package:flutter_extension/util/app_constants.dart';
@@ -19,6 +20,7 @@ void main() async {
     ),
   );
   InitialBindings().dependencies();
+  await OneSignalHelper.initialize();
   await ZegoCallService.setupSystemCallingUI(rootNavigatorKey);
 
   runApp(MyApp());

@@ -62,6 +62,8 @@ class ApiConstant {
   static const createThreads = 'chat/threads/';
   static const revenueCatSubscriptionSync =
       'account/subscription/revenuecat-sync/';
+  static const oneSignalDeviceSync = 'account/notification/onesignal/sync/';
+  static const oneSignalCallPush = 'call/offline/push/';
 
   static const deleteAccount = 'account/profile/delete/';
 }

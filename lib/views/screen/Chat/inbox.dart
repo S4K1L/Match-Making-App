@@ -1,18 +1,19 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_extension/controller/calling_controller.dart';
 import 'package:flutter_extension/controller/chat_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/model/chat_model.dart';
+import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/util/app_colors.dart';
 import 'package:flutter_extension/util/images.dart';
 import 'package:flutter_extension/views/base/chat_shimmer.dart';
-import 'package:flutter_extension/views/screen/Chat/calling_screen.dart';
 import 'package:flutter_extension/views/screen/Profile/AllSubScreen/report_and_issue_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:zego_uikit/zego_uikit.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 import '../../base/chat_bubble.dart';
 
@@ -302,6 +303,14 @@ class _InboxScreenState extends State<InboxScreen> {
 
   Widget _customAppbar() {
     final user = widget.chatModel.otherUser;
+    final invitee = user == null
+        ? <ZegoUIKitUser>[]
+        : [
+            ZegoUIKitUser(
+              id: user.userId.toString(),
+              name: user.fullName ?? user.username ?? "User ${user.userId}",
+            ),
+          ];
 
     return Column(
       children: [
@@ -318,35 +327,27 @@ class _InboxScreenState extends State<InboxScreen> {
               const SizedBox(width: 12),
               _userInfo(user),
               const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  Get.to(
-                    () => CallingScreen(
-                      receiverId: user!.userId.toString(),
-                      image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
-                      name: user.fullName!,
-                      type: CallType.audio,
-                    ),
-                  );
-                },
-                child: SvgPicture.asset('assets/icons/mobile.svg'),
+              ZegoSendCallInvitationButton(
+                isVideoCall: false,
+                resourceID: ZegoCallConfig.callResourceId,
+                invitees: invitee,
+                iconSize: const Size(28, 28),
+                buttonSize: const Size(30, 30),
+                icon: ButtonIcon(icon: SvgPicture.asset('assets/icons/mobile.svg')),
               ),
               const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {
-                  Get.to(
-                    () => CallingScreen(
-                      receiverId: user!.userId.toString(),
-                      image: ApiConstant.BASE_URL_IMAGE + user.profilePic!,
-                      name: user.fullName!,
-                      type: CallType.video,
-                    ),
-                  );
-                },
-                child: Icon(
-                  Icons.video_call_outlined,
-                  size: 28,
-                  color: Colors.grey.shade700,
+              ZegoSendCallInvitationButton(
+                isVideoCall: true,
+                resourceID: ZegoCallConfig.callResourceId,
+                invitees: invitee,
+                iconSize: const Size(32, 32),
+                buttonSize: const Size(32, 32),
+                icon: ButtonIcon(
+                  icon: Icon(
+                    Icons.video_call_outlined,
+                    size: 28,
+                    color: Colors.grey.shade700,
+                  ),
                 ),
               ),
               PopupMenuButton(
@@ -369,7 +370,7 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  Widget _avatar(user) {
+  Widget _avatar(OtherUser? user) {
     return Container(
       height: 35,
       width: 35,
@@ -385,11 +386,12 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  Widget _userInfo(user) {
+  Widget _userInfo(OtherUser? user) {
+    final displayName = user?.fullName ?? user?.username ?? 'Unknown user';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(user!.fullName, style: TextStyle(color: AppColors.textColor)),
+        Text(displayName, style: TextStyle(color: AppColors.textColor)),
         Row(
           children: [
             CircleAvatar(radius: 4, backgroundColor: Colors.greenAccent),

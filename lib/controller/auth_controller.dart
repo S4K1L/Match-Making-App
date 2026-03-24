@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
+import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_extension/views/screen/Auth/login_screen.dart';
 import 'package:get/get.dart';
@@ -46,6 +47,7 @@ class AuthController extends GetxController {
       if (response.statusCode == 200 && body['success'] == true) {
         setToken(body['access']);
         Get.find<UserController>().setInfo(body['data']['user_profile']);
+        await ZegoCallService.initForCurrentUser();
         return "success";
       }
 
@@ -78,6 +80,7 @@ class AuthController extends GetxController {
         final accessToken = body['data']['tokens']['access'];
         Get.find<UserController>().setInfo(userData);
         await setToken(accessToken);
+        await ZegoCallService.initForCurrentUser();
         return "success";
       } else {
         return "Please try again.";
@@ -149,6 +152,8 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         setToken(body['data']['tokens']['access']);
+        await Get.find<UserController>().getInfo();
+        await ZegoCallService.initForCurrentUser();
         return "success";
       } else {
         return "Invalid or expired OTP.";
@@ -231,6 +236,7 @@ class AuthController extends GetxController {
       final message = await Get.find<UserController>().getInfo();
       if (message == "success") {
         debugPrint("🟡 Token: $token");
+        await ZegoCallService.initForCurrentUser();
         isLoggedIn.value = true;
         return true;
       }
@@ -240,6 +246,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    ZegoCallService.uninit();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
     isLoggedIn.value = false;
@@ -247,6 +254,7 @@ class AuthController extends GetxController {
 
   Future<void> deleteAccount() async {
     await api.delete(ApiConstant.deleteAccount, authReq: true);
+    ZegoCallService.uninit();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
   }

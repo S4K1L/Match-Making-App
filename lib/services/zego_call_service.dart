@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:get/get.dart';
 import 'package:zego_uikit/zego_uikit.dart';
@@ -15,10 +16,12 @@ class ZegoCallService {
   static bool _systemCallingUiInitialized = false;
   static bool _invitationServiceInitialized = false;
 
-  static Future<void> setupSystemCallingUI() async {
+  static Future<void> setupSystemCallingUI(
+    GlobalKey<NavigatorState> navigatorKey,
+  ) async {
     if (_systemCallingUiInitialized) return;
 
-    ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(Get.key);
+    ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
     await ZegoUIKit().initLog();
     await ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI([
       ZegoUIKitSignalingPlugin(),
@@ -28,7 +31,7 @@ class ZegoCallService {
 
   static Future<void> initForCurrentUser() async {
     if (!_systemCallingUiInitialized) {
-      await setupSystemCallingUI();
+      await setupSystemCallingUI(Get.key);
     }
 
     if (_invitationServiceInitialized) return;

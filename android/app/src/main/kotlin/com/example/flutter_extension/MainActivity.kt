@@ -1,4 +1,4 @@
-package com.example.flutter_extension
+package com.blink.matchmaking
 
 import io.flutter.embedding.android.FlutterActivity
 

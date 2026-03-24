@@ -31,11 +31,11 @@ class HomeController extends GetxController {
   Timer? timer;
   bool isAnimatingOut = false;
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchData();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchData();
+  // }
 
   Future<void> fetchData() async {
     isLoading.value = true;

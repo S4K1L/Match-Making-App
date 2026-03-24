@@ -7,6 +7,8 @@ import 'package:flutter_extension/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'helper/route_helper.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
@@ -17,7 +19,7 @@ void main() async {
     ),
   );
   InitialBindings().dependencies();
-  await ZegoCallService.setupSystemCallingUI();
+  await ZegoCallService.setupSystemCallingUI(rootNavigatorKey);
 
   runApp(MyApp());
 }
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: AppConstants.APP_NAME,
       debugShowCheckedModeBanner: false,
-      navigatorKey: Get.key,
+      navigatorKey: rootNavigatorKey,
       theme: light(),
       defaultTransition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 500),

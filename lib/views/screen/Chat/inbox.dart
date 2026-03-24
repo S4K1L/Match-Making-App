@@ -333,7 +333,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 invitees: invitee,
                 iconSize: const Size(24, 24),
                 buttonSize: const Size(24, 24),
-                icon: ButtonIcon(icon: SvgPicture.asset('assets/icons/mobile.svg')),
+                icon: ButtonIcon(icon: SvgPicture.asset('assets/icons/mobile.svg',height: 24,width: 24)),
               ),
               const SizedBox(width: 12),
               ZegoSendCallInvitationButton(

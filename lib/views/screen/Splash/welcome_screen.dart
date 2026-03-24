@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/helper/route_helper.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/views/base/system_chrom.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -60,8 +61,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 _customButton(
                   text: "Login with Google",
                   icon: "assets/icons/google.svg",
-                  onTap: () {
-                    Get.find<AuthController>().googleLogin();
+                  onTap: () async {
+                    String message = await Get.find<AuthController>().googleLogin();
+                    if (message == "success") {
+                      Get.offAllNamed(AppRoutes.homeScreen);
+                    } else {
+                      showCustomSnackBar(message, isError: true);
+                    }
                   },
                 ),
                 const SizedBox(height: 32),

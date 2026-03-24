@@ -5,6 +5,25 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+	<string>BLINK</string>
+	<key>GIDClientID</key>
+	<string>817979237192-o964df320se79amrr904fs6lgep69bi8.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.817979237192-o964df320se79amrr904fs6lgep69bi8</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>google</string>
+		<string>com.googleusercontent.apps.817979237192-o964df320se79amrr904fs6lgep69bi8</string>
+	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
      <string>We need access to your photo library to select images.</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -16,7 +35,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This app uses Bluetooth for audio devices during calls.</string><string>Flutter Extension</string>
+	<string>This app uses Bluetooth for audio devices during calls.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

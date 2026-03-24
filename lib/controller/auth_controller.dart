@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/subscription_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/services/zego_call_service.dart';
 import 'package:flutter_extension/util/api_constant.dart';
@@ -14,7 +15,12 @@ class AuthController extends GetxController {
   RxBool isLoading = false.obs;
   final api = ApiService();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+  late final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId: ApiConstant.GOOGLE_WEB_CLIENT_ID.isEmpty
+        ? null
+        : ApiConstant.GOOGLE_WEB_CLIENT_ID,
+  );
 
   Future<String> googleLogin() async {
     isLoading(true);
@@ -29,7 +35,7 @@ class AuthController extends GetxController {
       final GoogleSignInAuthentication auth = await account.authentication;
 
       if (auth.idToken == null) {
-        return "Failed to get Google ID token";
+        return "Google ID token is missing. Add your Web OAuth client ID to ApiConstant.GOOGLE_WEB_CLIENT_ID and ensure your Google account is a test user.";
       }
 
       final payload = {
@@ -40,13 +46,19 @@ class AuthController extends GetxController {
         "id_token": auth.idToken,
       };
 
-      final response = await api.post("api/v1/accounts/googleLogin/", payload);
+      final response = await api.post("v1/account/googleLogin/", payload);
 
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200 && body['success'] == true) {
-        setToken(body['access']);
+        await setToken(body['access']);
         Get.find<UserController>().setInfo(body['data']['user_profile']);
+        final userId = Get.find<UserController>().userInfo.value?.userId;
+        if (userId != null) {
+          await Get.find<SubscriptionController>().onUserAuthenticated(
+            userId.toString(),
+          );
+        }
         await ZegoCallService.initForCurrentUser();
         return "success";
       }
@@ -80,6 +92,9 @@ class AuthController extends GetxController {
         final accessToken = body['data']['tokens']['access'];
         Get.find<UserController>().setInfo(userData);
         await setToken(accessToken);
+        await Get.find<SubscriptionController>().onUserAuthenticated(
+          userData['user_id'].toString(),
+        );
         await ZegoCallService.initForCurrentUser();
         return "success";
       } else {
@@ -236,6 +251,12 @@ class AuthController extends GetxController {
       final message = await Get.find<UserController>().getInfo();
       if (message == "success") {
         debugPrint("🟡 Token: $token");
+        final userId = Get.find<UserController>().userInfo.value?.userId;
+        if (userId != null) {
+          await Get.find<SubscriptionController>().onUserAuthenticated(
+            userId.toString(),
+          );
+        }
         await ZegoCallService.initForCurrentUser();
         isLoggedIn.value = true;
         return true;
@@ -247,6 +268,7 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     ZegoCallService.uninit();
+    await Get.find<SubscriptionController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
     isLoggedIn.value = false;
@@ -255,6 +277,7 @@ class AuthController extends GetxController {
   Future<void> deleteAccount() async {
     await api.delete(ApiConstant.deleteAccount, authReq: true);
     ZegoCallService.uninit();
+    await Get.find<SubscriptionController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
   }

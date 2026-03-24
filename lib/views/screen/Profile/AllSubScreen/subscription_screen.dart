@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_extension/controller/subscription_controller.dart';
+import 'package:flutter_extension/views/base/custom_snackbar.dart';
 import 'package:flutter_extension/util/images.dart';
+import 'package:flutter_extension/util/api_constant.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:flutter_extension/views/screen/Profile/AllSubScreen/confirmation_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -12,6 +14,39 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  final SubscriptionController _subscriptionController =
+      Get.find<SubscriptionController>();
+
+  Future<void> _handlePurchase(String packageId) async {
+    final success = await _subscriptionController.purchasePlan(packageId);
+    if (success) {
+      showCustomSnackBar('BLINK Pro activated.', isError: false);
+      return;
+    }
+    showCustomSnackBar(
+      _subscriptionController.lastError.value.isEmpty
+          ? 'Purchase was not completed.'
+          : _subscriptionController.lastError.value,
+      isError: true,
+    );
+  }
+
+  Future<void> _showPaywall() async {
+    final result = await _subscriptionController.showPaywallIfNeeded();
+    if (result.name == 'purchased' || result.name == 'restored') {
+      showCustomSnackBar('BLINK Pro activated.', isError: false);
+      return;
+    }
+    if (result.name == 'error') {
+      showCustomSnackBar(
+        _subscriptionController.lastError.value.isEmpty
+            ? 'Unable to load paywall right now.'
+            : _subscriptionController.lastError.value,
+        isError: true,
+      );
+    }
+  }
+
   Widget _buildFeatureLine(String text, bool isAllLargeCaps) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -66,7 +101,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isPremium ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isPremium ? 0.2 : 0.05),
             blurRadius: isPremium ? 25 : 10,
             spreadRadius: isPremium ? 2 : 1,
           ),
@@ -145,13 +180,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     double centerCardWidth = (screenWidth * 0.42).clamp(145.0, 165.0);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          SizedBox.expand(
-            child: Image.asset(Images.greeyBackground, fit: BoxFit.fill),
-          ),
-          SafeArea(
-            child: Column(
+      body: Obx(
+        () => Stack(
+          children: [
+            SizedBox.expand(
+              child: Image.asset(Images.greeyBackground, fit: BoxFit.fill),
+            ),
+            SafeArea(
+              child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -190,10 +226,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
+                  Expanded(
+                    child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      if (_subscriptionController.isBlinkProActive.value)
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            "BLINK PRO ACTIVE",
+                            style: TextStyle(
+                              fontFamily: 'Cinzel',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF133F36),
+                            ),
+                          ),
+                        ),
                       // Subscription Cards Stack
                       SizedBox(
                         height: 400,
@@ -206,21 +255,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 15),
                                 child: _buildCard(
-                                  title: "SOCIETY",
+                                  title:
+                                      "WEEKLY ${_subscriptionController.priceLabelFor(ApiConstant.REVENUECAT_PACKAGE_WEEKLY)}",
                                   icon: SvgPicture.asset(
                                     'assets/icons/society.svg',
-                                    color: const Color(0xFFD49E17),
+                                    colorFilter: const ColorFilter.mode(
+                                      Color(0xFFD49E17),
+                                      BlendMode.srcIn,
+                                    ),
                                     width: 38,
                                   ),
                                   isPremium: false,
-                                  isLoading: false,
+                                  isLoading:
+                                      _subscriptionController.isPurchasing.value &&
+                                          _subscriptionController
+                                                  .activePackageId.value ==
+                                              ApiConstant.REVENUECAT_PACKAGE_WEEKLY,
                                   isSolidButton: true,
                                   width: sideCardWidth,
-                                  height: 350,
+                                  height: 380,
                                   isAllLargeCaps: true,
 
                                   onTap: () {
-                                    Get.to(() => const ConfirmationScreen());
+                                    _handlePurchase(
+                                      ApiConstant.REVENUECAT_PACKAGE_WEEKLY,
+                                    );
                                   },
                                   features: [
                                     "Core Matching",
@@ -240,19 +299,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 15),
                                 child: _buildCard(
-                                  title: "ELITE",
+                                  title:
+                                      "MONTHLY ${_subscriptionController.priceLabelFor(ApiConstant.REVENUECAT_PACKAGE_MONTHLY)}",
                                   icon: SvgPicture.asset(
                                     'assets/icons/elite.svg',
-                                    color: const Color(0xFFD49E17),
+                                    colorFilter: const ColorFilter.mode(
+                                      Color(0xFFD49E17),
+                                      BlendMode.srcIn,
+                                    ),
                                     width: 38,
                                   ),
                                   isPremium: false,
                                   isSolidButton: true,
+                                  isLoading:
+                                      _subscriptionController.isPurchasing.value &&
+                                          _subscriptionController
+                                                  .activePackageId.value ==
+                                              ApiConstant.REVENUECAT_PACKAGE_MONTHLY,
                                   width: sideCardWidth,
-                                  height: 350,
+                                  height: 380,
                                   isAllLargeCaps: true,
                                   onTap: () {
-                                    // Get.to(() => const ConfirmationScreen());
+                                    _handlePurchase(
+                                      ApiConstant.REVENUECAT_PACKAGE_MONTHLY,
+                                    );
                                   },
                                   features: [
                                     "Unlimited Likes & Matches",
@@ -270,19 +340,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             Align(
                               alignment: Alignment.center,
                               child: _buildCard(
-                                title: "PREMIUM",
+                                title:
+                                    "YEARLY ${_subscriptionController.priceLabelFor(ApiConstant.REVENUECAT_PACKAGE_YEARLY)}",
                                 icon: SvgPicture.asset(
                                   'assets/icons/crown.svg',
-                                  color: const Color(0xFFD49E17),
+                                  colorFilter: const ColorFilter.mode(
+                                    Color(0xFFD49E17),
+                                    BlendMode.srcIn,
+                                  ),
                                   width: 38,
                                 ),
                                 isPremium: true,
                                 isSolidButton: true,
+                                isLoading:
+                                    _subscriptionController.isPurchasing.value &&
+                                        _subscriptionController
+                                                .activePackageId.value ==
+                                            ApiConstant.REVENUECAT_PACKAGE_YEARLY,
                                 width: centerCardWidth,
                                 height: 380,
                                 isAllLargeCaps: false,
                                 onTap: () {
-                                  // Get.to(() => const ConfirmationScreen());
+                                  _handlePurchase(
+                                    ApiConstant.REVENUECAT_PACKAGE_YEARLY,
+                                  );
                                 },
                                 features: [
                                   "Unlimited Likes & Matches",
@@ -305,7 +386,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: InkWell(
                           onTap: () {
-                            // Get.to(() => const ConfirmationScreen());
+                            _showPaywall();
                           },
                           child: Container(
                             width: double.infinity,
@@ -328,6 +409,25 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed: _subscriptionController.isLoading.value
+                                ? null
+                                : _subscriptionController.restore,
+                            child: const Text('Restore Purchases'),
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: _subscriptionController.isLoading.value
+                                ? null
+                                : _subscriptionController.openCustomerCenter,
+                            child: const Text('Customer Center'),
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 20),
                     ],
@@ -335,8 +435,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
               ],
             ),
-          ),
-        ],
+            ),
+            if (_subscriptionController.isLoading.value)
+              const Center(child: CircularProgressIndicator()),
+          ],
+        ),
       ),
     );
   }

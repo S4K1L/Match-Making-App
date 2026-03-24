@@ -315,7 +315,7 @@ class _InboxScreenState extends State<InboxScreen> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 35),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 35),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
@@ -331,8 +331,8 @@ class _InboxScreenState extends State<InboxScreen> {
                 isVideoCall: false,
                 resourceID: ZegoCallConfig.callResourceId,
                 invitees: invitee,
-                iconSize: const Size(28, 28),
-                buttonSize: const Size(30, 30),
+                iconSize: const Size(24, 24),
+                buttonSize: const Size(24, 24),
                 icon: ButtonIcon(icon: SvgPicture.asset('assets/icons/mobile.svg')),
               ),
               const SizedBox(width: 12),
@@ -344,7 +344,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 buttonSize: const Size(32, 32),
                 icon: ButtonIcon(
                   icon: Icon(
-                    Icons.video_call_outlined,
+                    Icons.video_camera_front_outlined,
                     size: 28,
                     color: Colors.grey.shade700,
                   ),

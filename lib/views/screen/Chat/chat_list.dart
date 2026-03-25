@@ -89,7 +89,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         itemCount: _chatController.filteredList.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 18),
+                        separatorBuilder: (_, _) => const SizedBox(height: 18),
                         itemBuilder: (context, index) {
                           final chat = _chatController.filteredList[index];
                           return ChatCardWidgets(chat: chat);

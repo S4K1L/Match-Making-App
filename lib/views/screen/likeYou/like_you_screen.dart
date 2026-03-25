@@ -202,7 +202,7 @@ class _MatcheScreenState extends State<MatcheScreen> {
         mainAxisSpacing: 10,
         childAspectRatio: .8,
       ),
-      itemBuilder: (_, __) {
+      itemBuilder: (_, _) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),

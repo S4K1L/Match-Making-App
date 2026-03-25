@@ -149,7 +149,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                           child: Container(
                             height: 75,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEBE1BF).withOpacity(0.5),
+                              color: const Color(0xFFEBE1BF).withValues(alpha: 0.5),
                               border: Border.all(
                                 color: const Color(0xFFD49E17),
                                 width: 1.2,

@@ -43,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _customAppbar(),
                     const SizedBox(height: 22),
-                    //TODO: Story Details work left
                     StoryListView(controller: _homeController),
                     const SizedBox(height: 18),
                     const Text(

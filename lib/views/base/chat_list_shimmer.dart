@@ -9,8 +9,8 @@ class ChatListShimmer extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       itemCount: 8,
-      separatorBuilder: (_, __) => const SizedBox(height: 18),
-      itemBuilder: (_, __) => const _ChatItemShimmer(),
+      separatorBuilder: (_, _) => const SizedBox(height: 18),
+      itemBuilder: (_, _) => const _ChatItemShimmer(),
     );
   }
 }

@@ -132,10 +132,10 @@ class _MenuScreenState extends State<MenuScreen> {
     return ListView.separated(
       itemCount: 6,
       separatorBuilder: (_, _) => const SizedBox(height: 16),
-      itemBuilder: (_, __) => Container(
+      itemBuilder: (_, _) => Container(
         height: 60,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.4),
+          color: Colors.white.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

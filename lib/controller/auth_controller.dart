@@ -271,9 +271,9 @@ class AuthController extends GetxController {
             userId: userId.toString(),
             email: email,
           );
-          await Get.find<SubscriptionController>().onUserAuthenticated(
-            userId.toString(),
-          );
+          // await Get.find<SubscriptionController>().onUserAuthenticated(
+          //   userId.toString(),
+          // );
         }
         await ZegoCallService.initForCurrentUser();
         isLoggedIn.value = true;

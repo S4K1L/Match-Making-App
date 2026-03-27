@@ -72,10 +72,10 @@ class SubscriptionController extends GetxController {
       currentOffering.value = offerings.current ?? offerings.all.values.firstOrNull;
       final customerInfo = await RevenueCatService.getCustomerInfo();
       _onCustomerInfoUpdated(customerInfo);
-      await syncSubscriptionToDatabase(
-        customerInfo: customerInfo,
-        source: 'refresh',
-      );
+      // await syncSubscriptionToDatabase(
+      //   customerInfo: customerInfo,
+      //   source: 'refresh',
+      // );
     } catch (e) {
       lastError.value = RevenueCatService.messageFromError(e);
     } finally {
@@ -106,10 +106,10 @@ class SubscriptionController extends GetxController {
     try {
       final customerInfo = await RevenueCatService.purchasePackage(package);
       _onCustomerInfoUpdated(customerInfo);
-      await syncSubscriptionToDatabase(
-        customerInfo: customerInfo,
-        source: 'purchase:$packageId',
-      );
+      // await syncSubscriptionToDatabase(
+      //   customerInfo: customerInfo,
+      //   source: 'purchase:$packageId',
+      // );
       return isBlinkProActive.value;
     } catch (e) {
       lastError.value = RevenueCatService.messageFromError(e);
@@ -138,10 +138,10 @@ class SubscriptionController extends GetxController {
     try {
       final customerInfo = await RevenueCatService.restorePurchases();
       _onCustomerInfoUpdated(customerInfo);
-      await syncSubscriptionToDatabase(
-        customerInfo: customerInfo,
-        source: 'restore',
-      );
+      // await syncSubscriptionToDatabase(
+      //   customerInfo: customerInfo,
+      //   source: 'restore',
+      // );
     } catch (e) {
       lastError.value = RevenueCatService.messageFromError(e);
     } finally {
@@ -157,6 +157,7 @@ class SubscriptionController extends GetxController {
       lastError.value = RevenueCatService.messageFromError(e);
     }
   }
+
 
   Future<String> syncSubscriptionToDatabase({
     CustomerInfo? customerInfo,
@@ -214,6 +215,8 @@ class SubscriptionController extends GetxController {
       return 'Unable to sync subscription.';
     }
   }
+
+
 
   Map<String, dynamic> _entitlementToJson(EntitlementInfo entitlement) {
     return {

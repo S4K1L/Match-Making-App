@@ -1,8 +1,8 @@
 import 'package:flutter_extension/controller/auth_controller.dart';
 import 'package:flutter_extension/controller/chat_controller.dart';
 import 'package:flutter_extension/controller/home_controller.dart';
+import 'package:flutter_extension/controller/rev_cat_controller.dart';
 import 'package:flutter_extension/controller/splash_controller.dart';
-import 'package:flutter_extension/controller/subscription_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +15,6 @@ class InitialBindings extends Bindings {
     Get.put(HomeController(), permanent: true);
     Get.put(UserController(), permanent: true);
     Get.put(ChatController(), permanent: true);
-    Get.put(SubscriptionController(), permanent: true);
+    Get.put(RevCatController(), permanent: true);
   }
 }

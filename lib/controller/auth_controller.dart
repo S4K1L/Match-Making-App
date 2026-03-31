@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_extension/controller/subscription_controller.dart';
+import 'package:flutter_extension/controller/rev_cat_controller.dart';
 import 'package:flutter_extension/controller/user_controller.dart';
 import 'package:flutter_extension/services/one_signal_services.dart';
 import 'package:flutter_extension/services/zego_call_service.dart';
@@ -60,7 +60,7 @@ class AuthController extends GetxController {
             userId: userId.toString(),
             email: account.email,
           );
-          await Get.find<SubscriptionController>().onUserAuthenticated(
+          await Get.find<RevCatController>().onUserAuthenticated(
             userId.toString(),
           );
         }
@@ -105,7 +105,7 @@ class AuthController extends GetxController {
             email: email,
           );
         }
-        await Get.find<SubscriptionController>().onUserAuthenticated(
+        await Get.find<RevCatController>().onUserAuthenticated(
           userData['user_id'].toString(),
         );
         await ZegoCallService.initForCurrentUser();
@@ -287,7 +287,7 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     ZegoCallService.uninit();
     await OneSignalHelper.onUserLogout();
-    await Get.find<SubscriptionController>().onUserLogout();
+    await Get.find<RevCatController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
     isLoggedIn.value = false;
@@ -297,7 +297,7 @@ class AuthController extends GetxController {
     await api.delete(ApiConstant.deleteAccount, authReq: true);
     ZegoCallService.uninit();
     await OneSignalHelper.onUserLogout();
-    await Get.find<SubscriptionController>().onUserLogout();
+    await Get.find<RevCatController>().onUserLogout();
     await SharedPrefsService.clear();
     Get.offAll(() => LoginScreen());
   }

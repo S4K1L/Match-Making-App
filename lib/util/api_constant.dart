@@ -4,11 +4,6 @@ class ApiConstant {
   // Google Cloud OAuth 2.0 Web Client ID (not Android client ID).
   // Needed to reliably receive idToken on Android with google_sign_in.
   static const String GOOGLE_WEB_CLIENT_ID = '817979237192-168vv8j0upk6ar1ndkfc45se751jbpm3.apps.googleusercontent.com';
-  static const String REVENUECAT_API_KEY = 'test_fObPiAkjoiwTJdSXpZXGbxDAGSC';
-  static const String REVENUECAT_ENTITLEMENT_BLINK_PRO = 'BLINK Pro';
-  static const String REVENUECAT_PACKAGE_WEEKLY = 'weekly';
-  static const String REVENUECAT_PACKAGE_MONTHLY = 'monthly';
-  static const String REVENUECAT_PACKAGE_YEARLY = 'yearly';
 
   static const String BASE_URL = 'http://10.10.12.111:8000/v1/';
   static const String BASE_URL_SOCKET =

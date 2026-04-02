@@ -8,9 +8,9 @@ class AppConstants {
 
   // ─── RevenueCat ────────────────────────────────────────────────────────────
   /// iOS app-specific API key from the RevenueCat dashboard.
-  static const String RC_APPLE_API_KEY = 'appl_YOUR_IOS_KEY';
+  static const String RC_APPLE_API_KEY = 'appl_UbGiZqPBpMNfCdGQayNXpnTnhEu';
   /// Android app-specific API key from the RevenueCat dashboard.
-  static const String RC_GOOGLE_API_KEY = 'goog_YOUR_ANDROID_KEY';
+  static const String RC_GOOGLE_API_KEY = 'goog_meLzQTCxpyoUVXIJSPkchRYMMNP';
   /// Offering identifier configured in the RevenueCat dashboard.
   static const String RC_OFFERING = 'default';
   /// Entitlement identifiers — one per subscription tier.

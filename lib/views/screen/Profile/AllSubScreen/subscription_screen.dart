@@ -31,15 +31,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-  Future<void> _handleShowPaywall() async {
-    final result = await _rc.showPaywallIfNeeded();
-    if (result.name == 'purchased' || result.name == 'restored') {
-      showCustomSnackBar('Subscription activated!', isError: false);
-    } else if (result.name == 'error' && _rc.lastError.value.isNotEmpty) {
-      showCustomSnackBar(_rc.lastError.value, isError: true);
-    }
-  }
-
   Future<void> _handleRestore() async {
     final info = await _rc.restorePackage();
     if (info != null && _rc.isSubscribed) {
@@ -368,37 +359,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 50),
-
-                        // ── Subscribe Now button ─────────────────────────
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 40),
-                          child: InkWell(
-                            onTap: _handleShowPaywall,
-                            child: Container(
-                              width: double.infinity,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF133F36),
-                                borderRadius: BorderRadius.circular(35),
-                              ),
-                              alignment: Alignment.center,
-                              child: const Text(
-                                'SUBSCRIBE NOW',
-                                style: TextStyle(
-                                  fontFamily: 'Cinzel',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 20),
 
                         // ── Restore / Customer Center ────────────────────
                         Row(

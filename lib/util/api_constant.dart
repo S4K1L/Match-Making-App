@@ -5,10 +5,10 @@ class ApiConstant {
   // Needed to reliably receive idToken on Android with google_sign_in.
   static const String GOOGLE_WEB_CLIENT_ID = '817979237192-168vv8j0upk6ar1ndkfc45se751jbpm3.apps.googleusercontent.com';
 
-  static const String BASE_URL = 'http://10.10.12.111:8000/v1/';
+  static const String BASE_URL = 'http://72.62.81.174:8000/v1/';
   static const String BASE_URL_SOCKET =
-      'ws://10.10.12.111:8000/ws/call/?token=';
-  static const String BASE_URL_IMAGE = 'http://10.10.12.111:8000';
+      'ws://72.62.81.174:8000/ws/call/?token=';
+  static const String BASE_URL_IMAGE = 'http://72.62.81.174:8000/';
 
   static const String signUp = 'account/signup/';
   static const String verifyOtpRegistration =

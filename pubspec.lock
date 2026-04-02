@@ -221,10 +221,10 @@ packages:
     dependency: transitive
     description:
       name: connectivity_plus_platform_interface
-      sha256: "42657c1715d48b167930d5f34d00222ac100475f73d10162ddf43e714932f204"
+      sha256: "3c09627c536d22fd24691a905cdd8b14520de69da52c7a97499c8be5284a32ed"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.0"
   convert:
     dependency: transitive
     description:
@@ -708,10 +708,10 @@ packages:
     dependency: "direct main"
     description:
       name: image_cropper
-      sha256: "2cd06f097b5bd18ff77d3f80fadef83e270ea23c82906bbf17febc3db8d68ec6"
+      sha256: d2555be1ec4b7b12fc502ede481c846ad44578fbb0748debd4c648b25ca07cad
       url: "https://pub.dev"
     source: hosted
-    version: "12.1.0"
+    version: "12.1.1"
   image_cropper_for_web:
     dependency: transitive
     description:
@@ -956,10 +956,10 @@ packages:
     dependency: "direct main"
     description:
       name: onesignal_flutter
-      sha256: "648d7f8ba43f7f9e11cd582d50ce5c432dc5349f47f116d49b714d4694ba828e"
+      sha256: "5f778073b850c4931fafe23404ac3ce38bff9bf2cc701bc969e9c8e77e7cadf2"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.6"
+    version: "5.5.0"
   package_info_plus:
     dependency: "direct main"
     description:
@@ -1148,18 +1148,18 @@ packages:
     dependency: "direct main"
     description:
       name: purchases_flutter
-      sha256: "8513d0750e671378d21b7ac1c72dd475661a9d6c139c714b232049d7483b2e67"
+      sha256: c344ddc799151536fa091592d0597616435559684d3efe45f70ecae2b3e205be
       url: "https://pub.dev"
     source: hosted
-    version: "9.15.1"
+    version: "9.16.0"
   purchases_ui_flutter:
     dependency: "direct main"
     description:
       name: purchases_ui_flutter
-      sha256: "5d4acb408d781fe738673fbafc5364038ac1eb2a19f181ea2b568abca76a404d"
+      sha256: "0b596e2b8536616bd526fef6ec8e12baa676db8c59ebe7ee29187328cbda8654"
       url: "https://pub.dev"
     source: hosted
-    version: "9.15.1"
+    version: "9.16.0"
   rxdart:
     dependency: transitive
     description:
@@ -1220,10 +1220,10 @@ packages:
     dependency: transitive
     description:
       name: share_plus
-      sha256: "14c8860d4de93d3a7e53af51bff479598c4e999605290756bbbe45cf65b37840"
+      sha256: "223873d106614442ea6f20db5a038685cc5b32a2fba81cdecaefbbae0523f7fa"
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.1"
+    version: "12.0.2"
   share_plus_platform_interface:
     dependency: transitive
     description:
@@ -1473,10 +1473,10 @@ packages:
     dependency: transitive
     description:
       name: vector_graphics
-      sha256: "7076216a10d5c390315fbe536a30f1254c341e7543e6c4c8a815e591307772b1"
+      sha256: "81da85e9ca8885ade47f9685b953cb098970d11be4821ac765580a6607ea4373"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.20"
+    version: "1.1.21"
   vector_graphics_codec:
     dependency: transitive
     description:

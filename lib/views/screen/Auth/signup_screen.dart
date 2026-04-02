@@ -190,13 +190,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 42),
                 Obx(() {
-                  String email = _emailController.text.trim();
-                  String password = _passwordController.text.trim();
-                  String confirmPassword = _confirmPasswordController.text
-                      .trim();
                   return CustomButton(
                     loading: _authController.isLoading.value,
                     onTap: () async {
+                      String email = _emailController.text.trim();
+                      String password = _passwordController.text.trim();
+                      String confirmPassword = _confirmPasswordController.text
+                          .trim();
                       if (email.isEmpty ||
                           password.isEmpty ||
                           confirmPassword.isEmpty) {

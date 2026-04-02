@@ -279,8 +279,8 @@ class SetpuProfileController extends GetxController {
 
       // Bio
       bio: bioController.text.trim().isEmpty ? null : bioController.text.trim(),
-      latitude: latitude.value,
-      longitude: longitude.value,
+      latitude: latitude.value.toPrecision(6),
+      longitude: longitude.value.toPrecision(6),
     );
   }
 

@@ -287,6 +287,7 @@ class OneSignalHelper {
 
   static void exitLiveActivity(String liveActivityId) {
     debugPrint("Exiting live activity with ID: $liveActivityId");
+    // ignore: deprecated_member_use
     OneSignal.LiveActivities.exitLiveActivity(liveActivityId);
   }
 
